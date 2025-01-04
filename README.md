@@ -1,5 +1,5 @@
 # Weather App 🌤️
-This is a **JavaFX-based weather application** that fetches weather data for a specified city and displays it in a user-friendly interface. The app uses the [OpenWeatherMap API]() to retrieve weather information such as temperature, humidity, and a general weather description.
+This is a **JavaFX-based weather application** that fetches weather data for a specified city and displays it in a user-friendly interface. The app uses the [OpenWeatherMap API](https://openweathermap.org/api) to retrieve weather information such as temperature, humidity, and a general weather description.
 
 ## Features ✨
 - Fetches current weather data for any city in the world.
@@ -29,7 +29,7 @@ cd weather-app
 Ensure that any required libraries (like Gson) are available in your project. If you're using **Gradle** as your build tool, add the following dependency for **Gson** in your `build.gradle` file:
 ``` gradle
 dependencies {
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 ```
 If you're using a dependency manager like Maven, add this dependency for **Gson** in your `pom.xml`:
@@ -40,10 +40,9 @@ If you're using a dependency manager like Maven, add this dependency for **Gson*
     <version>2.10</version>
 </dependency>
 ```
-If not, download the [Gson JAR]() and add it to your classpath manually.
 ### 3. Set the API Key
 a. **Create an OpenWeatherMap Account**:
-- Go to [OpenWeatherMap]() and register.
+- Go to [OpenWeatherMap](https://openweathermap.org/api) and register.
 - After registration, generate an API key in your account dashboard.
 
 b. **Set the API Key in Your Environment Variables**:
@@ -123,8 +122,6 @@ src/
 - **JavaFX**: For UI rendering.
 - **Gson**: For parsing JSON responses from OpenWeatherMap API.
 
-## License 📄
-This project is open-sourced under the MIT License. See the [LICENSE]() file for details.
 ## Acknowledgements 🙏
-- [OpenWeatherMap]() for their powerful weather API.
-- [JavaFX]() for the excellent UI framework.
+- [OpenWeatherMap](https://openweathermap.org/api) for their powerful weather API.
+- [JavaFX](https://openjfx.io/) for the excellent UI framework.
