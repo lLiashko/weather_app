@@ -1,25 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="act.ac.fhcampuswien.weather_app.HelloController"
-      alignment="CENTER" spacing="10" style="-fx-padding: 20;">
+      alignment="CENTER" spacing="15"
+      style="-fx-padding: 20; -fx-background-color: #2c3e50; -fx-font-family: 'Arial';">
 
-    <!-- TextField for entering a city name -->
-    <TextField fx:id="cityTextField" promptText="Enter City Name" />
-    <TextField fx:id="countryTextField" promptText="Enter Country Code" />
+    <!-- Input for city name -->
+    <TextField fx:id="cityTextField" promptText="Enter City Name"
+               style="-fx-background-color: #ecf0f1; -fx-text-fill: #2c3e50;" />
 
-    <!-- Button to fetch the weather -->
-    <Button text="Get Weather" onAction="#onGetWeatherButtonClick" />
+    <!-- Input for country code -->
+    <TextField fx:id="countryTextField" promptText="Enter Country Code (e.g., AT)"
+               style="-fx-background-color: #ecf0f1; -fx-text-fill: #2c3e50;" />
 
-    <!-- Labels for displaying weather data -->
-    <Label fx:id="cityLabel" text="City: " />
-    <Label fx:id="temperatureLabel" text="Temperature: " />
-    <Label fx:id="humidityLabel" text="Humidity: " />
-    <Label fx:id="descriptionLabel" text="Description: " />
+    <!-- Button to fetch weather -->
+    <Button text="Get Weather" onAction="#onGetWeatherButtonClick"
+            style="-fx-background-color: #3498db; -fx-text-fill: #ffffff;" />
+
+    <!-- Labels to display weather details -->
+    <Label fx:id="cityLabel" text="City Name"
+           style="-fx-font-size: 16px; -fx-text-fill: #ecf0f1;" />
+    <Label fx:id="temperatureLabel" text="Temperature"
+           style="-fx-font-size: 24px; -fx-text-fill: #ffffff;" />
+    <Label fx:id="humidityLabel" text="Humidity"
+           style="-fx-font-size: 14px; -fx-text-fill: #ecf0f1;" />
+    <Label fx:id="descriptionLabel" text="Weather Description"
+           style="-fx-font-size: 14px; -fx-text-fill: #ecf0f1;" />
+
+    <!-- Weather Icon -->
+    <ImageView fx:id="weatherIcon" fitWidth="100" fitHeight="100" />
 </VBox>
