@@ -11,7 +11,6 @@
            xmlns:fx="http://javafx.com/fxml"
            fx:id="rootStackPane"
            fx:controller="act.ac.fhcampuswien.weather_app.HelloController"
-           stylesheets="@act/ac/fhcampuswien/weather_app/weather.css"
            styleClass="root-pane">
 
     <!-- Main Content -->
