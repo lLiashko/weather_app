@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class WeatherAPI {
-    private static final String API_KEY = "WEATHER_API_KEY";
+    private static final String API_KEY = "23fa24bcbc65e5e9312f629d89ce1cc1";
     private static final String BASE_URL = "https://pro.openweathermap.org/data/2.5/weather";
 
     /**
