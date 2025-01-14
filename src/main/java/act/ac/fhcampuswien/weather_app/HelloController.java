@@ -46,6 +46,9 @@ public class HelloController {
     private Button getWeatherButton;
 
     @FXML
+    private ImageView welcomeGif;
+
+    @FXML
     public void onGetWeatherButtonClick() {
         String cityName = cityTextField.getText().trim();
         String countryCode = countryTextField.getText().trim();
@@ -100,10 +103,22 @@ public class HelloController {
 
     @FXML
     public void initialize() {
+        showWelcomeScreen();
         // Clear all fields and ensure get weather/back button visibility
         clearWeatherData();
         goBackButton.setVisible(false);
         getWeatherButton.setVisible(true);
+    }
+
+    private void showWelcomeScreen() {
+        try {
+            // Load the GIF
+            Image gifImage = new Image(getClass().getResource("/icons/ws_gif.gif").toExternalForm());
+            welcomeGif.setImage(gifImage); // Assign GIF to the ImageView
+
+        } catch (Exception e) {
+            System.out.println("Error loading welcome GIF: " + e.getMessage());
+        }
     }
 
     private void clearWeatherData() {
