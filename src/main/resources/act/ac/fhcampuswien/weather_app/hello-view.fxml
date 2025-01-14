@@ -22,44 +22,50 @@
         <!-- Input for city name -->
         <TextField fx:id="cityTextField"
                    promptText="Enter City Name"
-                   styleClass="city-textfield" />
+                   styleClass="city-textfield"/>
 
         <!-- Input for country code -->
         <TextField fx:id="countryTextField"
                    promptText="Enter Country Code (e.g., AT)"
-                   styleClass="country-textfield" />
+                   styleClass="country-textfield"/>
 
         <!-- Button to fetch weather -->
         <Button text="Get Weather"
                 fx:id="getWeatherButton"
                 onAction="#onGetWeatherButtonClick"
-                styleClass="weather-button" />
+                styleClass="weather-button"/>
 
         <!-- Labels to display weather details -->
         <Label fx:id="cityLabel"
                text="City Name"
-               styleClass="weather-label-title" />
+               styleClass="weather-label-title"/>
         <Label fx:id="temperatureLabel"
                text="Temperature"
-               styleClass="weather-label-temp" />
+               styleClass="weather-label-temp"/>
         <Label fx:id="humidityLabel"
                text="Humidity"
-               styleClass="weather-label-sub" />
+               styleClass="weather-label-sub"/>
         <Label fx:id="descriptionLabel"
                text="Weather Description"
-               styleClass="weather-label-sub" />
+               styleClass="weather-label-sub"/>
         <Label fx:id="moodLabel"
                text="Mood"
-               styleClass="weather-label-sub" />
+               styleClass="weather-label-sub"/>
         <Label fx:id="suggestionLabel"
                text="Suggestion"
-               styleClass="weather-label-sub" />
+               styleClass="weather-label-sub"/>
 
         <!-- Weather Icon -->
         <ImageView fx:id="weatherIcon"
                    fitWidth="100"
                    fitHeight="100"
-                   styleClass="weather-icon" />
+                   styleClass="weather-icon"/>
+
+        <Button text="Go Back"
+                fx:id="goBackButton"
+                onAction="#onGoBackButtonClick"
+                styleClass="back-button"
+                visible="false"/> <!-- Initially hidden -->
 
     </VBox>
 </StackPane>

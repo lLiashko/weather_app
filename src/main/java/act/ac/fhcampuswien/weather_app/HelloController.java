@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
 
 public class HelloController {
     @FXML
@@ -39,11 +40,12 @@ public class HelloController {
     private VBox rootVBox; // Root VBox to change background color
 
     @FXML
-    public void initialize() {
-        // Initial state: hide or clear weather-related labels and icon
-        clearWeatherData();
-    }
+    private Button goBackButton;
 
+    @FXML
+    private Button getWeatherButton;
+
+    @FXML
     public void onGetWeatherButtonClick() {
         String cityName = cityTextField.getText().trim();
         String countryCode = countryTextField.getText().trim();
@@ -71,10 +73,37 @@ public class HelloController {
             updateWeatherIcon(weatherData.getDescription());
             assignMoodAndSuggestion(weatherData.getDescription());
             updateBackgroundColor(weatherData.getDescription());
+
+            // Show the "Go Back" button and hide "Get Weather" button
+            goBackButton.setVisible(true);
+            getWeatherButton.setVisible(false);
+            cityTextField.setVisible(false);
+            countryTextField.setVisible(false);
+
         } catch (Exception e) {
             cityLabel.setText("Error: Could not fetch data for " + cityName);
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void onGoBackButtonClick() {
+        // Clear weather data and reset view
+        clearWeatherData();
+
+        // Reset visibility
+        goBackButton.setVisible(false);
+        getWeatherButton.setVisible(true);
+        cityTextField.setVisible(true);
+        countryTextField.setVisible(true);
+    }
+
+    @FXML
+    public void initialize() {
+        // Clear all fields and ensure get weather/back button visibility
+        clearWeatherData();
+        goBackButton.setVisible(false);
+        getWeatherButton.setVisible(true);
     }
 
     private void clearWeatherData() {
