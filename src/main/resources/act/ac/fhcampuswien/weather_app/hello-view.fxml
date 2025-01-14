@@ -1,37 +1,66 @@
-<?import javafx.scene.control.TextField?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="act.ac.fhcampuswien.weather_app.HelloController"
-      alignment="CENTER" spacing="15"
-      style="-fx-padding: 20; -fx-background-color: #2c3e50; -fx-font-family: 'Arial';">
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:id="rootStackPane"
+           fx:controller="act.ac.fhcampuswien.weather_app.HelloController"
+           stylesheets="@act/ac/fhcampuswien/weather_app/weather.css"
+           styleClass="root-pane">
 
-    <!-- Input for city name -->
-    <TextField fx:id="cityTextField" promptText="Enter City Name"
-               style="-fx-background-color: #ecf0f1; -fx-text-fill: #2c3e50;" />
+    <!-- Main Content -->
+    <VBox fx:id="rootVBox"
+          alignment="CENTER"
+          spacing="15"
+          styleClass="main-container">
 
-    <!-- Input for country code -->
-    <TextField fx:id="countryTextField" promptText="Enter Country Code (e.g., AT)"
-               style="-fx-background-color: #ecf0f1; -fx-text-fill: #2c3e50;" />
+        <!-- Input for city name -->
+        <TextField fx:id="cityTextField"
+                   promptText="Enter City Name"
+                   styleClass="city-textfield" />
 
-    <!-- Button to fetch weather -->
-    <Button text="Get Weather" onAction="#onGetWeatherButtonClick"
-            style="-fx-background-color: #3498db; -fx-text-fill: #ffffff;" />
+        <!-- Input for country code -->
+        <TextField fx:id="countryTextField"
+                   promptText="Enter Country Code (e.g., AT)"
+                   styleClass="country-textfield" />
 
-    <!-- Labels to display weather details -->
-    <Label fx:id="cityLabel" text="City Name"
-           style="-fx-font-size: 16px; -fx-text-fill: #ecf0f1;" />
-    <Label fx:id="temperatureLabel" text="Temperature"
-           style="-fx-font-size: 24px; -fx-text-fill: #ffffff;" />
-    <Label fx:id="humidityLabel" text="Humidity"
-           style="-fx-font-size: 14px; -fx-text-fill: #ecf0f1;" />
-    <Label fx:id="descriptionLabel" text="Weather Description"
-           style="-fx-font-size: 14px; -fx-text-fill: #ecf0f1;" />
+        <!-- Button to fetch weather -->
+        <Button text="Get Weather"
+                fx:id="getWeatherButton"
+                onAction="#onGetWeatherButtonClick"
+                styleClass="weather-button" />
 
-    <!-- Weather Icon -->
-    <ImageView fx:id="weatherIcon" fitWidth="100" fitHeight="100" />
-</VBox>
+        <!-- Labels to display weather details -->
+        <Label fx:id="cityLabel"
+               text="City Name"
+               styleClass="weather-label-title" />
+        <Label fx:id="temperatureLabel"
+               text="Temperature"
+               styleClass="weather-label-temp" />
+        <Label fx:id="humidityLabel"
+               text="Humidity"
+               styleClass="weather-label-sub" />
+        <Label fx:id="descriptionLabel"
+               text="Weather Description"
+               styleClass="weather-label-sub" />
+        <Label fx:id="moodLabel"
+               text="Mood"
+               styleClass="weather-label-sub" />
+        <Label fx:id="suggestionLabel"
+               text="Suggestion"
+               styleClass="weather-label-sub" />
+
+        <!-- Weather Icon -->
+        <ImageView fx:id="weatherIcon"
+                   fitWidth="100"
+                   fitHeight="100"
+                   styleClass="weather-icon" />
+
+    </VBox>
+</StackPane>
