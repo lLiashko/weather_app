@@ -38,9 +38,18 @@ public class HelloController {
     @FXML
     private VBox rootVBox; // Root VBox to change background color
 
+    @FXML
+    public void initialize() {
+        // Initial state: hide or clear weather-related labels and icon
+        clearWeatherData();
+    }
+
     public void onGetWeatherButtonClick() {
         String cityName = cityTextField.getText().trim();
         String countryCode = countryTextField.getText().trim();
+
+        // Clear old data on button click
+        clearWeatherData();
 
         if (cityName.isEmpty() || countryCode.isEmpty()) {
             cityLabel.setText("Please enter a city and country code!");
@@ -48,10 +57,12 @@ public class HelloController {
         }
 
         try {
+            // Fetch weather data
             WeatherAPI api = new WeatherAPI();
             String jsonResponse = api.fetchWeather(cityName, countryCode);
             WeatherData weatherData = api.parseWeatherData(jsonResponse);
 
+            // Update UI with fetched data
             cityLabel.setText(weatherData.getCityName());
             temperatureLabel.setText(weatherData.getTemperature() + "°C");
             descriptionLabel.setText(weatherData.getDescription());
@@ -64,6 +75,19 @@ public class HelloController {
             cityLabel.setText("Error: Could not fetch data for " + cityName);
             e.printStackTrace();
         }
+    }
+
+    private void clearWeatherData() {
+        // Clear all label texts, reset weather icon, and remove background styling
+        cityLabel.setText("");
+        temperatureLabel.setText("");
+        descriptionLabel.setText("");
+        humidityLabel.setText("");
+        moodLabel.setText("");
+        suggestionLabel.setText("");
+
+        weatherIcon.setImage(null); // Reset weather icon
+        rootVBox.setStyle(""); // Reset background color
     }
 
     private void updateWeatherIcon(String weatherDescription) {
