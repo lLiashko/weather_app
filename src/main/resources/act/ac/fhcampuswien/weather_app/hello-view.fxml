@@ -67,13 +67,6 @@
                 styleClass="back-button"
                 visible="false"/> <!-- Initially hidden -->
 
-        <ImageView fx:id="welcomeGif"
-                   fitHeight="400"
-                   fitWidth="600"
-                   preserveRatio="true"
-                   layoutX="50"
-                   layoutY="50"
-                   visible="true"/>
 
     </VBox>
 </StackPane>
