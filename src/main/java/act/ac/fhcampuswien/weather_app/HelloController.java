@@ -202,28 +202,52 @@ public class HelloController {
     }
 
     private void updateWeatherIcon(String weatherDescription) {
-        String iconPath;
+        String iconFileName;
 
-        if (weatherDescription.toLowerCase().contains("clear")) {
-            iconPath = "/icons/clear.png";
-        } else if (weatherDescription.toLowerCase().contains("cloud")) {
-            iconPath = "/icons/cloudy.png";
-        } else if (weatherDescription.toLowerCase().contains("rain")
-                || weatherDescription.toLowerCase().contains("drizzle")
-                || weatherDescription.toLowerCase().contains("light intensity drizzle")) {
-            iconPath = "/icons/rain.png";  // Use rain icon for drizzle
-        } else if (weatherDescription.toLowerCase().contains("snow")) {
-            iconPath = "/icons/snow.png";
-        } else {
-            iconPath = "/icons/default.png";
+        switch (weatherDescription.toLowerCase()) {
+            case "clear sky":
+                iconFileName = "clear.png";
+                break;
+            case "few clouds":
+                iconFileName = "cloudy.png";
+                break;
+            case "scattered clouds":
+                iconFileName = "cloudy.png";
+                break;
+            case "broken clouds":
+                iconFileName = "cloudy.png";
+                break;
+            case "shower rain":
+                iconFileName = "rain.png";
+                break;
+            case "rain":
+            case "light intensity drizzle":
+                iconFileName = "rain.png";
+                break;
+            case "overcast clouds":
+                iconFileName = "cloudy.png";
+                break;
+            case "thunderstorm":
+                iconFileName = "cloudy.png";
+                break;
+            case "snow":
+                iconFileName = "snow.png";
+                break;
+            case "mist":
+                iconFileName = "humidity.png";  // Use humidity icon for mist
+                break;
+            default:
+                iconFileName = "default.png";  // Fallback icon
         }
 
         try {
-            Image image = new Image(getClass().getResource(iconPath).toExternalForm());
-            weatherIcon.setImage(image);
+            String iconPath = "/icons/" + iconFileName;
+            Image icon = new Image(getClass().getResource(iconPath).toExternalForm());
+            weatherIcon.setImage(icon);
+        } catch (NullPointerException e) {
+            System.err.println("Error loading icon for description: " + weatherDescription + ". File not found: " + iconFileName);
         } catch (Exception e) {
-            System.out.println("Error loading icon for description: " + weatherDescription);
-            e.printStackTrace();
+            System.err.println("Error loading icon for description: " + weatherDescription + ". " + e.getMessage());
         }
     }
     private void assignMoodAndSuggestion(String weatherDescription) {
@@ -246,6 +270,15 @@ public class HelloController {
         } else if (weatherDescription.toLowerCase().contains("snow")) {
             mood = currentLanguage.equals("English") ? "Snowy: Feeling Cozy" : "Schneebedeckt: Gemütliche Vibes";
             suggestion = currentLanguage.equals("English") ? "Watch 'Frozen'." : "Schau dir 'Frozen' an.";
+        } else if (weatherDescription.toLowerCase().contains("clear sky")) {
+            mood = currentLanguage.equals("English") ? "Perfect day for a walk!" : "Perfekter Tag für einen Spaziergang!";
+            suggestion = currentLanguage.equals("English") ? "Enjoy the sunshine!" : "Genieß den Sonnenschein!";
+        } else if (weatherDescription.toLowerCase().contains("few clouds")) {
+            mood = currentLanguage.equals("English") ? "Great weather for outdoor fun!" : "Tolles Wetter für Aktivitäten im Freien!";
+            suggestion = currentLanguage.equals("English") ? "Have fun outside!" : "Viel Spaß draußen!";
+        } else if (weatherDescription.toLowerCase().contains("mist")) {
+            mood = currentLanguage.equals("English") ? "A mysterious vibe... perfect for reading or cozy drinks." : "Eine geheimnisvolle Stimmung... perfekt zum Lesen oder für gemütliche Getränke.";
+            suggestion = currentLanguage.equals("English") ? "Enjoy a cozy time indoors." : "Genieß eine gemütliche Zeit drinnen.";
         } else {
             mood = currentLanguage.equals("English") ? "Unknown: Feeling Curious" : "Unbekannt: Neugierige Vibes";
             suggestion = currentLanguage.equals("English") ? "Explore new music or movies!" : "Entdecke neue Musik oder Filme!";
@@ -254,7 +287,6 @@ public class HelloController {
         moodLabel.setText(mood);
         suggestionLabel.setText(suggestion);
     }
-
     private void updateBackgroundColor(String weatherDescription) {
         String backgroundColor;
 
