@@ -23,6 +23,8 @@ public class HelloController {
     @FXML
     private Label temperatureLabel;
 
+
+
     @FXML
     private Label descriptionLabel;
 
@@ -65,34 +67,52 @@ public class HelloController {
 
     @FXML
     public void initialize() {
-        // Clear all fields and ensure get weather/back button visibility
         clearWeatherData();
         goBackButton.setVisible(false);
         getWeatherButton.setVisible(true);
+
+        // Apply styling to match the main theme
+        applyButtonStyle(getWeatherButton);
+        applyButtonStyle(goBackButton);
+
 
         // Group the temperature radio buttons
         ToggleGroup temperatureToggleGroup = new ToggleGroup();
         celsiusRadioButton.setToggleGroup(temperatureToggleGroup);
         fahrenheitRadioButton.setToggleGroup(temperatureToggleGroup);
-
-        // Set default temperature selection
         celsiusRadioButton.setSelected(true);
-
-        // Add listeners to temperature radio buttons
-        celsiusRadioButton.setOnAction(event -> updateTemperatureUnit(true));
-        fahrenheitRadioButton.setOnAction(event -> updateTemperatureUnit(false));
 
         // Group the language radio buttons
         ToggleGroup languageToggleGroup = new ToggleGroup();
         englishRadioButton.setToggleGroup(languageToggleGroup);
         germanRadioButton.setToggleGroup(languageToggleGroup);
-
-        // Set default language selection
         englishRadioButton.setSelected(true);
 
-        // Add listeners to language radio buttons
+        // Add action listeners
+        celsiusRadioButton.setOnAction(event -> updateTemperatureUnit(true));
+        fahrenheitRadioButton.setOnAction(event -> updateTemperatureUnit(false));
         englishRadioButton.setOnAction(event -> updateLanguage("English"));
         germanRadioButton.setOnAction(event -> updateLanguage("German"));
+    }
+
+    // Apply consistent button styling
+    private void applyButtonStyle(Button button) {
+        button.setStyle("-fx-background-color: #4682B4; " +  // Same as 'Get Weather' button
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 14px; " +
+                "-fx-padding: 10px 20px; " +
+                "-fx-background-radius: 5px;");
+
+        button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: #5A9BD4; " +
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 14px; " +
+                "-fx-padding: 10px 20px; " +
+                "-fx-background-radius: 5px;"));
+        button.setOnMouseExited(event -> button.setStyle("-fx-background-color: #4682B4; " +
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 14px; " +
+                "-fx-padding: 10px 20px; " +
+                "-fx-background-radius: 5px;"));
     }
 
     @FXML
@@ -118,7 +138,7 @@ public class HelloController {
             cityLabel.setText(weatherData.getCityName());
             currentTemperatureInCelsius = weatherData.getTemperature();
             updateTemperatureLabel(currentTemperatureInCelsius);
-            descriptionLabel.setText(weatherData.getDescription());
+            descriptionLabel.setText(translateWeatherDescription(weatherData.getDescription())); // Set translated description
             humidityLabel.setText(currentLanguage.equals("English") ? "Humidity: " + weatherData.getHumidity() + "%" : "Luftfeuchtigkeit: " + weatherData.getHumidity() + "%");
 
             updateWeatherIcon(weatherData.getDescription());
@@ -147,12 +167,16 @@ public class HelloController {
         getWeatherButton.setVisible(true);
         cityTextField.setVisible(true);
         countryTextField.setVisible(true);
+
+        // Reset temperature unit to default (Celsius)
+        celsiusRadioButton.setSelected(true);
+        updateTemperatureUnit(true);
     }
 
     private void clearWeatherData() {
         // Clear all label texts, reset weather icon, and remove background styling
         cityLabel.setText("");
-        temperatureLabel.setText("");
+        temperatureLabel.setText(""); // Clear the temperature label
         descriptionLabel.setText("");
         humidityLabel.setText("");
         moodLabel.setText("");
@@ -160,6 +184,8 @@ public class HelloController {
 
         weatherIcon.setImage(null); // Reset weather icon
         rootVBox.setStyle(""); // Reset background color
+
+        currentTemperatureInCelsius = 0.0; // Reset stored temperature
     }
 
     private void updateWeatherIcon(String weatherDescription) {
@@ -196,12 +222,20 @@ public class HelloController {
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
             mood = currentLanguage.equals("English") ? "Cloudy: Feeling Pensive" : "Wolkig: Nachdenklich";
             suggestion = currentLanguage.equals("English") ? "Watch 'The Cloud Atlas'." : "Schau dir 'The Cloud Atlas' an.";
+        } else if (weatherDescription.toLowerCase().contains("scattered clouds")) {
+            mood = currentLanguage.equals("English") ? "Scattered Clouds: Feeling Reflective" : "Aufgelockerte Bewölkung: Reflektierende Stimmung";
+            suggestion = currentLanguage.equals("English") ? "Read a book or take a walk." : "Lies ein Buch oder mach einen Spaziergang.";
+        } else if (weatherDescription.toLowerCase().contains("light intensity drizzle")) {
+            mood = currentLanguage.equals("English") ? "Light Intensity Drizzle: Feeling Mellow" : "Leichter Nieselregen: Sanfte Stimmung";
+            suggestion = currentLanguage.equals("English") ? "Listen to some soft music." : "Hör dir sanfte Musik an.";
         } else if (weatherDescription.toLowerCase().contains("rain")) {
             mood = currentLanguage.equals("English") ? "Rainy: Feeling Emo" : "Regnerisch: Emo Vibes";
             suggestion = currentLanguage.equals("English") ? "Listen to 'Raindrops Keep Fallin' on My Head'." : "Hören dir 'Raindrops Keep Fallin' on My Head' an.";
         } else if (weatherDescription.toLowerCase().contains("snow")) {
             mood = currentLanguage.equals("English") ? "Snowy: Feeling Cozy" : "Schneebedeckt: Gemütliche Vibes";
             suggestion = currentLanguage.equals("English") ? "Watch 'Frozen'." : "Schau dir 'Frozen' an.";
+
+
         } else {
             mood = currentLanguage.equals("English") ? "Unknown: Feeling Curious" : "Unbekannt: Neugierige Vibes";
             suggestion = currentLanguage.equals("English") ? "Explore new music or movies!" : "Entdecke neue Musik oder Filme!";
@@ -210,7 +244,6 @@ public class HelloController {
         moodLabel.setText(mood);
         suggestionLabel.setText(suggestion);
     }
-
     private void updateBackgroundColor(String weatherDescription) {
         String backgroundColor;
 
@@ -267,5 +300,50 @@ public class HelloController {
             englishRadioButton.setText("Englisch");
             germanRadioButton.setText("Deutsch");
         }
+    }
+    /**
+     * Translates the weather description based on the current language setting.
+     *
+     * @param description The original weather description from the API.
+     * @return The translated weather description.
+     */
+    private String translateWeatherDescription(String description) {
+        if (currentLanguage.equals("German")) {
+            switch (description.toLowerCase()) {
+                case "clear sky":
+                    return "Klarer Himmel";
+                case "few clouds":
+                    return "Wenige Wolken";
+                case "scattered clouds":
+                    return "Aufgelockerte Bewölkung";
+                case "broken clouds":
+                    return "Stark bewölkt";
+                case "shower rain":
+                    return "Regenschauer";
+                case "rain":
+                    return "Regen";
+                case "light rain":
+                    return "Leichter Regen";
+                case "moderate rain":
+                    return "Mäßiger Regen";
+                case "heavy intensity rain":
+                    return "Starker Regen";
+                case "thunderstorm":
+                    return "Gewitter";
+                case "snow":
+                    return "Schnee";
+                case "mist":
+                    return "Nebel";
+                case "haze":
+                    return "Dunst";
+                case "fog":
+                    return "Nebel";
+                case "light intensity drizzle":
+                    return "Leichter Nieselregen";
+                default:
+                    return description; // Fallback to the original if not matched
+            }
+        }
+        return description; // Return original description if language is English
     }
 }
