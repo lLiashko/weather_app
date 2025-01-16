@@ -2,8 +2,12 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -13,60 +17,86 @@
            fx:controller="act.ac.fhcampuswien.weather_app.HelloController"
            styleClass="root-pane">
 
-    <!-- Main Content -->
-    <VBox fx:id="rootVBox"
-          alignment="CENTER"
-          spacing="15"
-          styleClass="main-container">
+    <TabPane fx:id="tabPane" styleClass="main-tab-pane">
+        <Tab text="Weather">
+            <VBox fx:id="rootVBox"
+                  alignment="CENTER"
+                  spacing="15"
+                  styleClass="main-container">
 
-        <!-- Input for city name -->
-        <TextField fx:id="cityTextField"
-                   promptText="Enter City Name"
-                   styleClass="city-textfield"/>
+                <!-- Input for city name -->
+                <TextField fx:id="cityTextField"
+                           promptText="Enter City Name"
+                           styleClass="city-textfield"/>
 
-        <!-- Input for country code -->
-        <TextField fx:id="countryTextField"
-                   promptText="Enter Country Code (e.g., AT)"
-                   styleClass="country-textfield"/>
+                <!-- Input for country code -->
+                <TextField fx:id="countryTextField"
+                           promptText="Enter Country Code (e.g., AT)"
+                           styleClass="country-textfield"/>
 
-        <!-- Button to fetch weather -->
-        <Button text="Get Weather"
-                fx:id="getWeatherButton"
-                onAction="#onGetWeatherButtonClick"
-                styleClass="weather-button"/>
+                <!-- Button to fetch weather -->
+                <Button text="Get Weather"
+                        fx:id="getWeatherButton"
+                        onAction="#onGetWeatherButtonClick"
+                        styleClass="weather-button"/>
 
-        <!-- Labels to display weather details -->
-        <Label fx:id="cityLabel"
-               text="City Name"
-               styleClass="weather-label-title"/>
-        <Label fx:id="temperatureLabel"
-               text="Temperature"
-               styleClass="weather-label-temp"/>
-        <Label fx:id="humidityLabel"
-               text="Humidity"
-               styleClass="weather-label-sub"/>
-        <Label fx:id="descriptionLabel"
-               text="Weather Description"
-               styleClass="weather-label-sub"/>
-        <Label fx:id="moodLabel"
-               text="Mood"
-               styleClass="weather-label-sub"/>
-        <Label fx:id="suggestionLabel"
-               text="Suggestion"
-               styleClass="weather-label-sub"/>
+                <!-- Labels to display weather details -->
+                <Label fx:id="cityLabel"
+                       text="City Name"
+                       styleClass="weather-label-title"/>
+                <Label fx:id="temperatureLabel"
+                       text="Temperature"
+                       styleClass="weather-label-temp"/>
+                <Label fx:id="humidityLabel"
+                       text="Humidity"
+                       styleClass="weather-label-sub"/>
+                <Label fx:id="descriptionLabel"
+                       text="Weather Description"
+                       styleClass="weather-label-sub"/>
+                <Label fx:id="moodLabel"
+                       text="Mood"
+                       styleClass="weather-label-sub"/>
+                <Label fx:id="suggestionLabel"
+                       text="Suggestion"
+                       styleClass="weather-label-sub"/>
 
-        <!-- Weather Icon -->
-        <ImageView fx:id="weatherIcon"
-                   fitWidth="100"
-                   fitHeight="100"
-                   styleClass="weather-icon"/>
+                <!-- Weather Icon -->
+                <ImageView fx:id="weatherIcon"
+                           fitWidth="100"
+                           fitHeight="100"
+                           styleClass="weather-icon"/>
 
-        <Button text="Go Back"
-                fx:id="goBackButton"
-                onAction="#onGoBackButtonClick"
-                styleClass="back-button"
-                visible="false"/> <!-- Initially hidden -->
+                <Button text="Go Back"
+                        fx:id="goBackButton"
+                        onAction="#onGoBackButtonClick"
+                        styleClass="back-button"
+                        visible="false"/> <!-- Initially hidden -->
 
+            </VBox>
+        </Tab>
+        <Tab text="Settings">
+            <VBox fx:id="settingsVBox"
+                  alignment="CENTER"
+                  spacing="15"
+                  styleClass="settings-container">
+                <Label text="Settings" styleClass="settings-title"/>
 
-    </VBox>
+                <!-- Temperature Unit Toggle -->
+                <HBox alignment="CENTER" spacing="10" styleClass="settings-hbox">
+                    <Label text="Temperature Unit:" styleClass="settings-label"/>
+                    <RadioButton text="Celsius" fx:id="celsiusRadioButton" styleClass="settings-radio-button"/>
+                    <RadioButton text="Fahrenheit" fx:id="fahrenheitRadioButton" styleClass="settings-radio-button"/>
+
+                </HBox>
+
+                <!-- Language Selection -->
+                <HBox alignment="CENTER" spacing="10" styleClass="settings-hbox">
+                    <Label text="Language:" styleClass="settings-label"/>
+                    <RadioButton text="English" fx:id="englishRadioButton" styleClass="settings-radio-button"/>
+                    <RadioButton text="German" fx:id="germanRadioButton" styleClass="settings-radio-button"/>
+                </HBox>
+            </VBox>
+        </Tab>
+    </TabPane>
 </StackPane>
+
