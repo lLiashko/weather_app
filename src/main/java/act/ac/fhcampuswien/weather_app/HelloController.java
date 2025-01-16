@@ -255,7 +255,7 @@ public class HelloController {
         String suggestion;
 
         if (weatherDescription.toLowerCase().contains("clear")) {
-            mood = currentLanguage.equals("English") ? "Sunny: Having Main Character Energy" : "Sonnig: Main-Character-Energy Vibes :D";
+            mood = currentLanguage.equals("English") ? "Sunny: Having Main Character Energy" : "Sonnig: Main-Character-Energy Vibes";
             suggestion = currentLanguage.equals("English") ? "Listen to 'Walking on Sunshine'!" : "Hör dir 'Walking on Sunshine' an!";
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
             mood = currentLanguage.equals("English") ? "Cloudy: Feeling Pensive" : "Wolkig: Nachdenklich";
