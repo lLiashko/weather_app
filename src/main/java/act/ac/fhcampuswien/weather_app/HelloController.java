@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
 
 public class HelloController {
     @FXML
@@ -22,8 +23,6 @@ public class HelloController {
 
     @FXML
     private Label temperatureLabel;
-
-
 
     @FXML
     private Label descriptionLabel;
@@ -50,6 +49,9 @@ public class HelloController {
     private Button getWeatherButton;
 
     @FXML
+    private Button saveSettingsButton; // Added missing declaration
+
+    @FXML
     private RadioButton celsiusRadioButton;
 
     @FXML
@@ -60,6 +62,18 @@ public class HelloController {
 
     @FXML
     private RadioButton germanRadioButton;
+
+    @FXML
+    private Tab settingsTab; // Added missing declaration
+
+    @FXML
+    private Label settingsTitleLabel; // Added missing declaration
+
+    @FXML
+    private Label temperatureUnitLabel; // Added missing declaration
+
+    @FXML
+    private Label languageLabel; // Added missing declaration
 
     private boolean isCelsius = true; // Default to Celsius
     private double currentTemperatureInCelsius; // Store the current temperature in Celsius
@@ -74,7 +88,6 @@ public class HelloController {
         // Apply styling to match the main theme
         applyButtonStyle(getWeatherButton);
         applyButtonStyle(goBackButton);
-
 
         // Group the temperature radio buttons
         ToggleGroup temperatureToggleGroup = new ToggleGroup();
@@ -195,7 +208,7 @@ public class HelloController {
             iconPath = "/icons/clear.png";
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
             iconPath = "/icons/cloudy.png";
-        } else if (weatherDescription.toLowerCase().contains("rain")) {
+        } else if (weatherDescription.toLowerCase().contains("rain") || weatherDescription.toLowerCase().contains("light intensity drizzle")) {
             iconPath = "/icons/rain.png";
         } else if (weatherDescription.toLowerCase().contains("snow")) {
             iconPath = "/icons/snow.png";
@@ -234,8 +247,6 @@ public class HelloController {
         } else if (weatherDescription.toLowerCase().contains("snow")) {
             mood = currentLanguage.equals("English") ? "Snowy: Feeling Cozy" : "Schneebedeckt: Gemütliche Vibes";
             suggestion = currentLanguage.equals("English") ? "Watch 'Frozen'." : "Schau dir 'Frozen' an.";
-
-
         } else {
             mood = currentLanguage.equals("English") ? "Unknown: Feeling Curious" : "Unbekannt: Neugierige Vibes";
             suggestion = currentLanguage.equals("English") ? "Explore new music or movies!" : "Entdecke neue Musik oder Filme!";
@@ -244,6 +255,7 @@ public class HelloController {
         moodLabel.setText(mood);
         suggestionLabel.setText(suggestion);
     }
+
     private void updateBackgroundColor(String weatherDescription) {
         String backgroundColor;
 
@@ -277,30 +289,59 @@ public class HelloController {
 
     private void updateLanguage(String language) {
         this.currentLanguage = language;
-        updateUILabels();
+        updateUILabels();  // WICHTIG: Labels aktualisieren
     }
 
     private void updateUILabels() {
         if (currentLanguage.equals("English")) {
+            // Input placeholders
             cityTextField.setPromptText("Enter City Name");
             countryTextField.setPromptText("Enter Country Code (e.g., AT)");
+
+            // Buttons
             getWeatherButton.setText("Get Weather");
             goBackButton.setText("Go Back");
+            saveSettingsButton.setText("Save Settings");
+
+            // Temperature Unit
             celsiusRadioButton.setText("Celsius");
             fahrenheitRadioButton.setText("Fahrenheit");
+
+            // Language Options
             englishRadioButton.setText("English");
             germanRadioButton.setText("German");
+
+            // Settings Tab Labels
+            settingsTab.setText("Settings");                // Tab Title
+            settingsTitleLabel.setText("Settings");         // Title in Settings
+            temperatureUnitLabel.setText("Temperature Unit");  // Temperature Unit Label
+            languageLabel.setText("Language");             // Language Label
         } else {
+            // Input placeholders
             cityTextField.setPromptText("Stadtname eingeben");
             countryTextField.setPromptText("Ländercode eingeben (z.B., AT)");
+
+            // Buttons
             getWeatherButton.setText("Wetter abrufen");
             goBackButton.setText("Zurück");
+            saveSettingsButton.setText("Einstellungen speichern");
+
+            // Temperature Unit
             celsiusRadioButton.setText("Celsius");
             fahrenheitRadioButton.setText("Fahrenheit");
+
+            // Language Options
             englishRadioButton.setText("Englisch");
             germanRadioButton.setText("Deutsch");
+
+            // Settings Tab Labels
+            settingsTab.setText("Einstellungen");               // Tab Title
+            settingsTitleLabel.setText("Einstellungen");        // Title in Settings
+            temperatureUnitLabel.setText("Temperatureinheit");  // Temperature Unit Label
+            languageLabel.setText("Sprache");                  // Language Label
         }
     }
+
     /**
      * Translates the weather description based on the current language setting.
      *
