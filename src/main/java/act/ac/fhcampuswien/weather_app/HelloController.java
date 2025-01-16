@@ -208,8 +208,10 @@ public class HelloController {
             iconPath = "/icons/clear.png";
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
             iconPath = "/icons/cloudy.png";
-        } else if (weatherDescription.toLowerCase().contains("rain") || weatherDescription.toLowerCase().contains("light intensity drizzle")) {
-            iconPath = "/icons/rain.png";
+        } else if (weatherDescription.toLowerCase().contains("rain")
+                || weatherDescription.toLowerCase().contains("drizzle")
+                || weatherDescription.toLowerCase().contains("light intensity drizzle")) {
+            iconPath = "/icons/rain.png";  // Use rain icon for drizzle
         } else if (weatherDescription.toLowerCase().contains("snow")) {
             iconPath = "/icons/snow.png";
         } else {
@@ -224,7 +226,6 @@ public class HelloController {
             e.printStackTrace();
         }
     }
-
     private void assignMoodAndSuggestion(String weatherDescription) {
         String mood;
         String suggestion;
@@ -235,12 +236,10 @@ public class HelloController {
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
             mood = currentLanguage.equals("English") ? "Cloudy: Feeling Pensive" : "Wolkig: Nachdenklich";
             suggestion = currentLanguage.equals("English") ? "Watch 'The Cloud Atlas'." : "Schau dir 'The Cloud Atlas' an.";
-        } else if (weatherDescription.toLowerCase().contains("scattered clouds")) {
-            mood = currentLanguage.equals("English") ? "Scattered Clouds: Feeling Reflective" : "Aufgelockerte Bewölkung: Reflektierende Stimmung";
-            suggestion = currentLanguage.equals("English") ? "Read a book or take a walk." : "Lies ein Buch oder mach einen Spaziergang.";
-        } else if (weatherDescription.toLowerCase().contains("light intensity drizzle")) {
-            mood = currentLanguage.equals("English") ? "Light Intensity Drizzle: Feeling Mellow" : "Leichter Nieselregen: Sanfte Stimmung";
-            suggestion = currentLanguage.equals("English") ? "Listen to some soft music." : "Hör dir sanfte Musik an.";
+        } else if (weatherDescription.toLowerCase().contains("light intensity drizzle")
+                || weatherDescription.toLowerCase().contains("drizzle")) {
+            mood = currentLanguage.equals("English") ? "Light Drizzle: Feeling Calm" : "Leichter Nieselregen: Ruhige Stimmung";
+            suggestion = currentLanguage.equals("English") ? "Enjoy a warm drink and relax." : "Genieß ein warmes Getränk und entspanne dich.";
         } else if (weatherDescription.toLowerCase().contains("rain")) {
             mood = currentLanguage.equals("English") ? "Rainy: Feeling Emo" : "Regnerisch: Emo Vibes";
             suggestion = currentLanguage.equals("English") ? "Listen to 'Raindrops Keep Fallin' on My Head'." : "Hören dir 'Raindrops Keep Fallin' on My Head' an.";
@@ -259,8 +258,8 @@ public class HelloController {
     private void updateBackgroundColor(String weatherDescription) {
         String backgroundColor;
 
-        if (weatherDescription.toLowerCase().contains("clear")) {
-            backgroundColor = "#fab005"; // Darker but bright yellow (goldenrod)
+        if (weatherDescription.toLowerCase().contains("clear sky")) {
+            backgroundColor = "#B0C4DE"; // Same as cloudy (light steel blue)
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
             backgroundColor = "#B0C4DE"; // Cloudy (light steel blue)
         } else if (weatherDescription.toLowerCase().contains("rain")) {
