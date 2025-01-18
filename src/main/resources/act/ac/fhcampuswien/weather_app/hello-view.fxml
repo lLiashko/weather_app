@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ListView?>
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:id="rootStackPane"
@@ -24,15 +25,14 @@
                   spacing="15"
                   styleClass="main-container">
 
-                <!-- Input for city name -->
+                <!-- Input for city and country code -->
                 <TextField fx:id="cityTextField"
                            promptText="Enter City Name"
                            styleClass="city-textfield"/>
 
-                <!-- Input for country code -->
-                <TextField fx:id="countryTextField"
-                           promptText="Enter Country Code (e.g., AT)"
-                           styleClass="country-textfield"/>
+
+                <ListView fx:id="listView"
+                          styleClass="city-textfield"/>
 
                 <!-- Button to fetch weather -->
                 <Button text="Get Weather"

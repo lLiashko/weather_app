@@ -1,22 +1,25 @@
 package act.ac.fhcampuswien.weather_app;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
+
+import java.io.*;
 
 public class HelloController {
+//    @FXML
+//    private TextField countryTextField;
+
     @FXML
     private TextField cityTextField;
 
     @FXML
-    private TextField countryTextField;
+    private ListView<String> listView;
 
     @FXML
     private Label cityLabel;
@@ -78,6 +81,8 @@ public class HelloController {
     private boolean isCelsius = true; // Default to Celsius
     private double currentTemperatureInCelsius; // Store the current temperature in Celsius
     private String currentLanguage = "English"; // Default to English
+    private ObservableList<String> cityList = FXCollections.observableArrayList();
+    private String selectedCity = "";
 
     @FXML
     public void initialize() {
@@ -106,6 +111,48 @@ public class HelloController {
         fahrenheitRadioButton.setOnAction(event -> updateTemperatureUnit(false));
         englishRadioButton.setOnAction(event -> updateLanguage("English"));
         germanRadioButton.setOnAction(event -> updateLanguage("German"));
+        loadCSVFiles();
+
+        // Create a FilteredList that wraps the cityList
+        FilteredList<String> filteredList = new FilteredList<>(cityList, s -> true);
+
+        // Bind the filtered list to the ListView
+        listView.setItems(filteredList);
+
+        /*cityTextField.textProperty().addListener((observable, oldValue, newValue) ->{
+            listView.setItems(cityList.filtered(item -> item.toLowerCase().contains(newValue.toLowerCase())));
+        } );*/
+
+        // Add a listener to the search field to filter the list dynamically
+        cityTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredList.setPredicate(city -> {
+                // If the search field is empty, display all cities
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                // Compare the city names with the search text (case-insensitive)
+                return city.toLowerCase().contains(newValue.toLowerCase());
+            });
+        });
+
+        // Handle selection of items in the ListView
+        listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, userSelection) -> {
+            if (userSelection != null) {
+                this.selectedCity=userSelection;
+         }});
+    }
+
+    private void loadCSVFiles(){
+        try (InputStream input = getClass().getResourceAsStream("/data/country_codes.csv");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                this.cityList.add(line);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Apply consistent button styling
@@ -130,8 +177,15 @@ public class HelloController {
 
     @FXML
     public void onGetWeatherButtonClick() {
-        String cityName = cityTextField.getText().trim();
-        String countryCode = countryTextField.getText().trim();
+        if(this.selectedCity.isEmpty()){
+            return;
+        }
+        String[] cityAndCountryCode = this.selectedCity.split(";");
+        String cityName = cityAndCountryCode[0];
+        // TODO Do it
+        String countryCode = cityAndCountryCode[1];
+
+        System.out.println(cityAndCountryCode[0] + " " + cityAndCountryCode[1]);
 
         // Clear old data on button click
         clearWeatherData();
@@ -162,7 +216,8 @@ public class HelloController {
             goBackButton.setVisible(true);
             getWeatherButton.setVisible(false);
             cityTextField.setVisible(false);
-            countryTextField.setVisible(false);
+            //countryTextField.setVisible(false);
+            listView.setVisible(false);
 
         } catch (Exception e) {
             cityLabel.setText(currentLanguage.equals("English") ? "Error: Could not fetch data for " + cityName : "Fehler: Daten für " + cityName + " konnten nicht abgerufen werden");
@@ -179,7 +234,8 @@ public class HelloController {
         goBackButton.setVisible(false);
         getWeatherButton.setVisible(true);
         cityTextField.setVisible(true);
-        countryTextField.setVisible(true);
+//        countryTextField.setVisible(true);
+        listView.setVisible(true);
 
         // Reset temperature unit to default (Celsius)
         celsiusRadioButton.setSelected(true);
@@ -327,7 +383,7 @@ public class HelloController {
         if (currentLanguage.equals("English")) {
             // Input placeholders
             cityTextField.setPromptText("Enter City Name");
-            countryTextField.setPromptText("Enter Country Code (e.g., AT)");
+//            countryTextField.setPromptText("Enter Country Code (e.g., AT)");
 
             // Buttons
             getWeatherButton.setText("Get Weather");
@@ -350,7 +406,7 @@ public class HelloController {
         } else {
             // Input placeholders
             cityTextField.setPromptText("Stadtname eingeben");
-            countryTextField.setPromptText("Ländercode eingeben (z.B., AT)");
+//            countryTextField.setPromptText("Ländercode eingeben (z.B., AT)");
 
             // Buttons
             getWeatherButton.setText("Wetter abrufen");
