@@ -15,7 +15,7 @@
 
 <StackPane fx:id="rootStackPane" styleClass="root-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="act.ac.fhcampuswien.weather_app.HelloController">
 
-    <TabPane fx:id="tabPane" styleClass="main-tab-pane">
+    <TabPane fx:id="tabPane" styleClass="main-tab-pane" tabClosingPolicy="UNAVAILABLE">
         <Tab text="Weather">
             <VBox fx:id="rootVBox" alignment="CENTER" spacing="15" styleClass="main-container">
 
