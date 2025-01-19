@@ -4,79 +4,67 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 import java.io.*;
 
 public class HelloController {
-//    @FXML
-//    private TextField countryTextField;
 
     @FXML
     private TextField cityTextField;
-
     @FXML
     private ListView<String> listView;
-
     @FXML
     private Label cityLabel;
-
     @FXML
     private Label temperatureLabel;
-
     @FXML
     private Label descriptionLabel;
-
     @FXML
     private Label humidityLabel;
-
     @FXML
     private Label moodLabel;
-
     @FXML
     private Label suggestionLabel;
-
     @FXML
     private ImageView weatherIcon;
-
     @FXML
     private VBox rootVBox; // Root VBox to change background color
-
     @FXML
     private Button goBackButton;
-
     @FXML
     private Button getWeatherButton;
-
     @FXML
-    private Button saveSettingsButton; // Added missing declaration
-
+    private Button saveSettingsButton;
     @FXML
     private RadioButton celsiusRadioButton;
-
     @FXML
     private RadioButton fahrenheitRadioButton;
-
     @FXML
     private RadioButton englishRadioButton;
-
     @FXML
     private RadioButton germanRadioButton;
-
     @FXML
-    private Tab settingsTab; // Added missing declaration
-
+    private Tab settingsTab;
     @FXML
-    private Label settingsTitleLabel; // Added missing declaration
-
+    private Label settingsTitleLabel;
     @FXML
-    private Label temperatureUnitLabel; // Added missing declaration
-
+    private Label temperatureUnitLabel;
     @FXML
-    private Label languageLabel; // Added missing declaration
+    private Label languageLabel;
+    @FXML
+    private Button forecastButton;
+    @FXML
+    private GridPane forecastGrid;
+    @FXML
+    private Button getForecastButton;
 
     private boolean isCelsius = true; // Default to Celsius
     private double currentTemperatureInCelsius; // Store the current temperature in Celsius
@@ -84,68 +72,119 @@ public class HelloController {
     private ObservableList<String> cityList = FXCollections.observableArrayList();
     private String selectedCity = "";
 
+    private void addForecastRow(int index, WeatherData data) {
+        Label dayLabel = new Label(translateDay(index));
+        double temperature = isCelsius ? data.getTemperature() : (data.getTemperature() * 9 / 5) + 32;
+        Label tempLabel = new Label(String.format("%.1f", temperature) + (isCelsius ? "°C" : "°F"));
+        Label descLabel = new Label(translateWeatherDescription(data.getDescription()));
+        Label humidityLabel = new Label(translateHumidity(data.getHumidity()));
+        forecastGrid.add(dayLabel, 0, index);
+        forecastGrid.add(tempLabel, 1, index);
+        forecastGrid.add(descLabel, 2, index);
+        forecastGrid.add(humidityLabel, 3, index);
+    }
+
+    @FXML
+    public void onGetForecastButtonClick() {
+        // Get city name from the text field
+        String cityName = cityTextField.getText().trim();
+        String countryCode = "AT";  // Use a dynamic country code if necessary
+
+        try {
+            // Fetch forecast data
+            WeatherAPI api = new WeatherAPI();
+            String jsonResponse = api.fetchForecast(cityName, countryCode);
+
+            // Parse the forecast data
+            WeatherData[] forecastData = api.parseForecastData(jsonResponse);
+
+            // Clear previous forecast from the GridPane
+            clearForecastGrid();
+            forecastGrid.getChildren().clear();
+
+            // Loop through the forecastData array and add it to your GridPane
+            for (int i = 0; i < forecastData.length; i++) {
+                WeatherData data = forecastData[i];
+
+                // Adjust the temperature based on the selected unit (Celsius/Fahrenheit)
+                double temperature = isCelsius ? data.getTemperature() : (data.getTemperature() * 9/5) + 32;
+
+                // Create labels for each forecast day
+                Label dayLabel = new Label(translateDay(i)); // Translate Day label
+                Label tempLabel = new Label(String.format("%.1f", temperature) + (isCelsius ? "°C" : "°F"));
+                Label descLabel = new Label(translateWeatherDescription(data.getDescription())); // Translate weather description
+                Label humidityLabel = new Label(translateHumidity(data.getHumidity())); // Translate humidity
+
+                // Add these labels to the GridPane
+                forecastGrid.add(dayLabel, 0, i);  // Add to column 0, row i
+                forecastGrid.add(tempLabel, 1, i);  // Add to column 1, row i
+                forecastGrid.add(descLabel, 2, i);  // Add to column 2, row i
+                forecastGrid.add(humidityLabel, 3, i);  // Add to column 3, row i
+            }
+
+        } catch (Exception e) {
+            // Handle any exceptions (e.g., network issues, parsing errors)
+            e.printStackTrace();
+        }
+    }
+
+    private Stage getStage() {
+        return (Stage) getWeatherButton.getScene().getWindow();
+    }
+
+    private void clearForecastGrid() {
+        forecastGrid.getChildren().clear();
+    }
+
     @FXML
     public void initialize() {
         clearWeatherData();
+        forecastGrid.getChildren().clear();
         goBackButton.setVisible(false);
         getWeatherButton.setVisible(true);
+        getForecastButton.setVisible(true);
 
-        // Apply styling to match the main theme
         applyButtonStyle(getWeatherButton);
         applyButtonStyle(goBackButton);
 
-        // Group the temperature radio buttons
         ToggleGroup temperatureToggleGroup = new ToggleGroup();
         celsiusRadioButton.setToggleGroup(temperatureToggleGroup);
         fahrenheitRadioButton.setToggleGroup(temperatureToggleGroup);
         celsiusRadioButton.setSelected(true);
 
-        // Group the language radio buttons
         ToggleGroup languageToggleGroup = new ToggleGroup();
         englishRadioButton.setToggleGroup(languageToggleGroup);
         germanRadioButton.setToggleGroup(languageToggleGroup);
         englishRadioButton.setSelected(true);
 
-        // Add action listeners
         celsiusRadioButton.setOnAction(event -> updateTemperatureUnit(true));
         fahrenheitRadioButton.setOnAction(event -> updateTemperatureUnit(false));
         englishRadioButton.setOnAction(event -> updateLanguage("English"));
         germanRadioButton.setOnAction(event -> updateLanguage("German"));
         loadCSVFiles();
 
-        // Create a FilteredList that wraps the cityList
         FilteredList<String> filteredList = new FilteredList<>(cityList, s -> true);
-
-        // Bind the filtered list to the ListView
         listView.setItems(filteredList);
 
-        /*cityTextField.textProperty().addListener((observable, oldValue, newValue) ->{
-            listView.setItems(cityList.filtered(item -> item.toLowerCase().contains(newValue.toLowerCase())));
-        } );*/
-
-        // Add a listener to the search field to filter the list dynamically
         cityTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredList.setPredicate(city -> {
-                // If the search field is empty, display all cities
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
-                // Compare the city names with the search text (case-insensitive)
                 return city.toLowerCase().contains(newValue.toLowerCase());
             });
         });
 
-        // Handle selection of items in the ListView
         listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, userSelection) -> {
             if (userSelection != null) {
-                this.selectedCity=userSelection;
-         }});
+                this.selectedCity = userSelection;
+            }
+        });
     }
 
-    private void loadCSVFiles(){
+    private void loadCSVFiles() {
         try (InputStream input = getClass().getResourceAsStream("/data/country_codes.csv");
              BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
-
             String line;
             while ((line = reader.readLine()) != null) {
                 this.cityList.add(line);
@@ -155,9 +194,8 @@ public class HelloController {
         }
     }
 
-    // Apply consistent button styling
     private void applyButtonStyle(Button button) {
-        button.setStyle("-fx-background-color: #4682B4; " +  // Same as 'Get Weather' button
+        button.setStyle("-fx-background-color: #4682B4; " +
                 "-fx-text-fill: white; " +
                 "-fx-font-size: 14px; " +
                 "-fx-padding: 10px 20px; " +
@@ -177,17 +215,13 @@ public class HelloController {
 
     @FXML
     public void onGetWeatherButtonClick() {
-        if(this.selectedCity.isEmpty()){
+        if (this.selectedCity.isEmpty()) {
             return;
         }
         String[] cityAndCountryCode = this.selectedCity.split(";");
         String cityName = cityAndCountryCode[0];
-        // TODO Do it
         String countryCode = cityAndCountryCode[1];
 
-        System.out.println(cityAndCountryCode[0] + " " + cityAndCountryCode[1]);
-
-        // Clear old data on button click
         clearWeatherData();
 
         if (cityName.isEmpty() || countryCode.isEmpty()) {
@@ -196,27 +230,26 @@ public class HelloController {
         }
 
         try {
-            // Fetch weather data
             WeatherAPI api = new WeatherAPI();
             String jsonResponse = api.fetchWeather(cityName, countryCode);
+
             WeatherData weatherData = api.parseWeatherData(jsonResponse);
 
-            // Update UI with fetched data
             cityLabel.setText(weatherData.getCityName());
             currentTemperatureInCelsius = weatherData.getTemperature();
             updateTemperatureLabel(currentTemperatureInCelsius);
-            descriptionLabel.setText(translateWeatherDescription(weatherData.getDescription())); // Set translated description
+            descriptionLabel.setText(translateWeatherDescription(weatherData.getDescription()));
             humidityLabel.setText(currentLanguage.equals("English") ? "Humidity: " + weatherData.getHumidity() + "%" : "Luftfeuchtigkeit: " + weatherData.getHumidity() + "%");
 
             updateWeatherIcon(weatherData.getDescription());
             assignMoodAndSuggestion(weatherData.getDescription());
             updateBackgroundColor(weatherData.getDescription());
 
-            // Show the "Go Back" button and hide "Get Weather" button
+            getForecastButton.setVisible(false);
+
             goBackButton.setVisible(true);
             getWeatherButton.setVisible(false);
             cityTextField.setVisible(false);
-            //countryTextField.setVisible(false);
             listView.setVisible(false);
 
         } catch (Exception e) {
@@ -227,34 +260,30 @@ public class HelloController {
 
     @FXML
     public void onGoBackButtonClick() {
-        // Clear weather data and reset view
         clearWeatherData();
+        forecastGrid.getChildren().clear();
 
-        // Reset visibility
         goBackButton.setVisible(false);
         getWeatherButton.setVisible(true);
+        getForecastButton.setVisible(true);
         cityTextField.setVisible(true);
-//        countryTextField.setVisible(true);
         listView.setVisible(true);
 
-        // Reset temperature unit to default (Celsius)
         celsiusRadioButton.setSelected(true);
         updateTemperatureUnit(true);
     }
 
     private void clearWeatherData() {
-        // Clear all label texts, reset weather icon, and remove background styling
         cityLabel.setText("");
-        temperatureLabel.setText(""); // Clear the temperature label
+        temperatureLabel.setText("");
         descriptionLabel.setText("");
         humidityLabel.setText("");
         moodLabel.setText("");
         suggestionLabel.setText("");
 
-        weatherIcon.setImage(null); // Reset weather icon
-        rootVBox.setStyle(""); // Reset background color
-
-        currentTemperatureInCelsius = 0.0; // Reset stored temperature
+        weatherIcon.setImage(null);
+        rootVBox.setStyle("");
+        currentTemperatureInCelsius = 0.0;
     }
 
     private void updateWeatherIcon(String weatherDescription) {
@@ -290,10 +319,10 @@ public class HelloController {
                 iconFileName = "snow.png";
                 break;
             case "mist":
-                iconFileName = "humidity.png";  // Use humidity icon for mist
+                iconFileName = "humidity.png";
                 break;
             default:
-                iconFileName = "default.png";  // Fallback icon
+                iconFileName = "default.png";
         }
 
         try {
@@ -306,6 +335,7 @@ public class HelloController {
             System.err.println("Error loading icon for description: " + weatherDescription + ". " + e.getMessage());
         }
     }
+
     private void assignMoodAndSuggestion(String weatherDescription) {
         String mood;
         String suggestion;
@@ -316,25 +346,12 @@ public class HelloController {
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
             mood = currentLanguage.equals("English") ? "Cloudy: Feeling Pensive" : "Wolkig: Nachdenklich";
             suggestion = currentLanguage.equals("English") ? "Watch 'The Cloud Atlas'." : "Schau dir 'The Cloud Atlas' an.";
-        } else if (weatherDescription.toLowerCase().contains("light intensity drizzle")
-                || weatherDescription.toLowerCase().contains("drizzle")) {
-            mood = currentLanguage.equals("English") ? "Light Drizzle: Feeling Calm" : "Leichter Nieselregen: Ruhige Stimmung";
-            suggestion = currentLanguage.equals("English") ? "Enjoy a warm drink and relax." : "Genieß ein warmes Getränk und entspanne dich.";
         } else if (weatherDescription.toLowerCase().contains("rain")) {
             mood = currentLanguage.equals("English") ? "Rainy: Feeling Emo" : "Regnerisch: Emo Vibes";
             suggestion = currentLanguage.equals("English") ? "Listen to 'Raindrops Keep Fallin' on My Head'." : "Hören dir 'Raindrops Keep Fallin' on My Head' an.";
         } else if (weatherDescription.toLowerCase().contains("snow")) {
             mood = currentLanguage.equals("English") ? "Snowy: Feeling Cozy" : "Schneebedeckt: Gemütliche Vibes";
             suggestion = currentLanguage.equals("English") ? "Watch 'Frozen'." : "Schau dir 'Frozen' an.";
-        } else if (weatherDescription.toLowerCase().contains("clear sky")) {
-            mood = currentLanguage.equals("English") ? "Perfect day for a walk!" : "Perfekter Tag für einen Spaziergang!";
-            suggestion = currentLanguage.equals("English") ? "Enjoy the sunshine!" : "Genieß den Sonnenschein!";
-        } else if (weatherDescription.toLowerCase().contains("few clouds")) {
-            mood = currentLanguage.equals("English") ? "Great weather for outdoor fun!" : "Tolles Wetter für Aktivitäten im Freien!";
-            suggestion = currentLanguage.equals("English") ? "Have fun outside!" : "Viel Spaß draußen!";
-        } else if (weatherDescription.toLowerCase().contains("mist")) {
-            mood = currentLanguage.equals("English") ? "A mysterious vibe... perfect for reading or cozy drinks." : "Eine geheimnisvolle Stimmung... perfekt zum Lesen oder für gemütliche Getränke.";
-            suggestion = currentLanguage.equals("English") ? "Enjoy a cozy time indoors." : "Genieß eine gemütliche Zeit drinnen.";
         } else {
             mood = currentLanguage.equals("English") ? "Unknown: Feeling Curious" : "Unbekannt: Neugierige Vibes";
             suggestion = currentLanguage.equals("English") ? "Explore new music or movies!" : "Entdecke neue Musik oder Filme!";
@@ -343,19 +360,20 @@ public class HelloController {
         moodLabel.setText(mood);
         suggestionLabel.setText(suggestion);
     }
+
     private void updateBackgroundColor(String weatherDescription) {
         String backgroundColor;
 
         if (weatherDescription.toLowerCase().contains("clear sky")) {
-            backgroundColor = "#B0C4DE"; // Same as cloudy (light steel blue)
+            backgroundColor = "#B0C4DE";
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
-            backgroundColor = "#B0C4DE"; // Cloudy (light steel blue)
+            backgroundColor = "#B0C4DE";
         } else if (weatherDescription.toLowerCase().contains("rain")) {
-            backgroundColor = "#4682B4"; // Rainy (steel blue)
+            backgroundColor = "#4682B4";
         } else if (weatherDescription.toLowerCase().contains("snow")) {
-            backgroundColor = "#ADD8E6"; // Snowy (light blue)
+            backgroundColor = "#ADD8E6";
         } else {
-            backgroundColor = "#2c3e50"; // Default (dark slate gray)
+            backgroundColor = "#2c3e50";
         }
 
         rootVBox.setStyle("-fx-background-color: " + backgroundColor + "; -fx-padding: 20; -fx-font-family: 'Arial';");
@@ -369,72 +387,51 @@ public class HelloController {
     }
 
     private void updateTemperatureLabel(double temperatureInCelsius) {
-        double temperature = isCelsius ? temperatureInCelsius : (temperatureInCelsius * 9/5) + 32;
+        double temperature = isCelsius ? temperatureInCelsius : (temperatureInCelsius * 9 / 5) + 32;
         String unit = isCelsius ? "°C" : "°F";
         temperatureLabel.setText(String.format("%.1f%s", temperature, unit));
     }
 
     private void updateLanguage(String language) {
         this.currentLanguage = language;
-        updateUILabels();  // WICHTIG: Labels aktualisieren
+        updateUILabels();
+
+        if (goBackButton.isVisible()) {
+            onGetWeatherButtonClick();
+        } else if (getForecastButton.isVisible()) {
+            onGetForecastButtonClick();
+        }
     }
 
     private void updateUILabels() {
         if (currentLanguage.equals("English")) {
-            // Input placeholders
             cityTextField.setPromptText("Enter City Name");
-//            countryTextField.setPromptText("Enter Country Code (e.g., AT)");
-
-            // Buttons
             getWeatherButton.setText("Get Weather");
             goBackButton.setText("Go Back");
             saveSettingsButton.setText("Save Settings");
-
-            // Temperature Unit
             celsiusRadioButton.setText("Celsius");
             fahrenheitRadioButton.setText("Fahrenheit");
-
-            // Language Options
             englishRadioButton.setText("English");
             germanRadioButton.setText("German");
-
-            // Settings Tab Labels
-            settingsTab.setText("Settings");                // Tab Title
-            settingsTitleLabel.setText("Settings");         // Title in Settings
-            temperatureUnitLabel.setText("Temperature Unit");  // Temperature Unit Label
-            languageLabel.setText("Language");             // Language Label
+            settingsTab.setText("Settings");
+            settingsTitleLabel.setText("Settings");
+            temperatureUnitLabel.setText("Temperature Unit");
+            languageLabel.setText("Language");
         } else {
-            // Input placeholders
             cityTextField.setPromptText("Stadtname eingeben");
-//            countryTextField.setPromptText("Ländercode eingeben (z.B., AT)");
-
-            // Buttons
             getWeatherButton.setText("Wetter abrufen");
             goBackButton.setText("Zurück");
             saveSettingsButton.setText("Einstellungen speichern");
-
-            // Temperature Unit
             celsiusRadioButton.setText("Celsius");
             fahrenheitRadioButton.setText("Fahrenheit");
-
-            // Language Options
             englishRadioButton.setText("Englisch");
             germanRadioButton.setText("Deutsch");
-
-            // Settings Tab Labels
-            settingsTab.setText("Einstellungen");               // Tab Title
-            settingsTitleLabel.setText("Einstellungen");        // Title in Settings
-            temperatureUnitLabel.setText("Temperatureinheit");  // Temperature Unit Label
-            languageLabel.setText("Sprache");                  // Language Label
+            settingsTab.setText("Einstellungen");
+            settingsTitleLabel.setText("Einstellungen");
+            temperatureUnitLabel.setText("Temperatureinheit");
+            languageLabel.setText("Sprache");
         }
     }
-
-    /**
-     * Translates the weather description based on the current language setting.
-     *
-     * @param description The original weather description from the API.
-     * @return The translated weather description.
-     */
     private String translateWeatherDescription(String description) {
         if (currentLanguage.equals("German")) {
             switch (description.toLowerCase()) {
@@ -468,10 +465,32 @@ public class HelloController {
                     return "Nebel";
                 case "light intensity drizzle":
                     return "Leichter Nieselregen";
+                case "overcast clouds":
+                    return "Bewölkt";
                 default:
                     return description; // Fallback to the original if not matched
             }
         }
-        return description; // Return original description if language is English
+        return description; // Return the description as is if language is English
     }
+    private String translateHumidity(int humidity) {
+        if (currentLanguage.equals("German")) {
+            return "Luftfeuchtigkeit: " + humidity + "%";
+        }
+        return "Humidity: " + humidity + "%";
+    }
+    private String translateDay(int index) {
+        if (currentLanguage.equals("German")) {
+            switch (index) {
+                case 0: return "Tag 1";
+                case 1: return "Tag 2";
+                case 2: return "Tag 3";
+                case 3: return "Tag 4";
+                case 4: return "Tag 5";
+                default: return "Tag " + (index + 1); // Fallback
+            }
+        }
+        return "Day " + (index + 1); // Return in English by default
+    }
+
 }

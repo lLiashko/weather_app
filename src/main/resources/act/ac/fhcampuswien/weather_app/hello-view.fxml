@@ -12,6 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+
+
 
 <StackPane fx:id="rootStackPane" styleClass="root-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="act.ac.fhcampuswien.weather_app.HelloController">
 
@@ -30,6 +33,16 @@
 
                 <!-- Button to fetch weather -->
                 <Button fx:id="getWeatherButton" onAction="#onGetWeatherButtonClick" styleClass="weather-button" text="Get Weather" />
+
+                <Button fx:id="getForecastButton" text="Get Weather Forecast" onAction="#onGetForecastButtonClick" />
+
+                <GridPane fx:id="forecastGrid" hgap="10" vgap="10" alignment="CENTER" styleClass="forecast-grid">
+                    <Label text="Day" />
+                    <Label text="Temperature" />
+                    <Label text="Description" />
+                    <Label text="Humidity" />
+                </GridPane>
+
 
                 <!-- Labels to display weather details -->
                 <Label fx:id="cityLabel" styleClass="weather-label-title" text="City Name" />
