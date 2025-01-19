@@ -80,11 +80,12 @@
 .text-field {
     -fx-background-color: rgba(255, 255, 255, 0.2);
     -fx-text-fill: #ecf0f1;
-    -fx-padding: 8 12;
+
     -fx-background-radius: 20;
     -fx-border-color: #ffffff;
     -fx-border-radius: 20;
     -fx-border-width: 1px;
+    -fx-margin-top:100px;
 }
 
 .settings-container {
@@ -122,3 +123,9 @@
     -fx-padding: 5 10;
 }
 
+.list-view {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: #d3d3d3;
+    -fx-border-width: 2px;
+    -fx-padding: 5px;
+}
