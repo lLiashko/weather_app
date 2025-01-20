@@ -46,7 +46,7 @@ public class WeatherAPI {
         }
     }
 
-    public String fetchWeather(String cityName, String countryCode) throws Exception {
+    public static String fetchWeather(String cityName, String countryCode) throws Exception {
         String urlString = BASE_URL + "?q=" + cityName + "," + countryCode + "&units=metric&APPID=" + API_KEY;
         URL url = new URL(urlString);
 
@@ -109,7 +109,7 @@ public class WeatherAPI {
      * @param jsonResponse The JSON response from the API.
      * @return WeatherData object containing the weather information.
      */
-    public WeatherData parseWeatherData(String jsonResponse) {
+    public static WeatherData parseWeatherData(String jsonResponse) {
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(jsonResponse, JsonObject.class);
 
@@ -118,6 +118,7 @@ public class WeatherAPI {
         String description = jsonObject.getAsJsonArray("weather").get(0).getAsJsonObject().get("description").getAsString();
         String cityName = jsonObject.get("name").getAsString();
         String countryCode = jsonObject.getAsJsonObject("sys").get("country").getAsString();
+
 
         return new WeatherData(temperature, humidity, description, cityName, countryCode);
     }

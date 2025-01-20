@@ -60,11 +60,15 @@ public class HelloController {
     @FXML
     private Label languageLabel;
     @FXML
-    private Button forecastButton;
-    @FXML
     private GridPane forecastGrid;
     @FXML
     private Button getForecastButton;
+    @FXML
+    private TextField cityInputField; // TextField für Stadt
+
+    @FXML
+    private TextField countryCodeInputField; // TextField für Ländercode
+
 
     private boolean isCelsius = true; // Default to Celsius
     private double currentTemperatureInCelsius; // Store the current temperature in Celsius
@@ -72,64 +76,52 @@ public class HelloController {
     private ObservableList<String> cityList = FXCollections.observableArrayList();
     private String selectedCity = "";
 
-    private void addForecastRow(int index, WeatherData data) {
-        Label dayLabel = new Label(translateDay(index));
-        double temperature = isCelsius ? data.getTemperature() : (data.getTemperature() * 9 / 5) + 32;
-        Label tempLabel = new Label(String.format("%.1f", temperature) + (isCelsius ? "°C" : "°F"));
-        Label descLabel = new Label(translateWeatherDescription(data.getDescription()));
-        Label humidityLabel = new Label(translateHumidity(data.getHumidity()));
-        forecastGrid.add(dayLabel, 0, index);
-        forecastGrid.add(tempLabel, 1, index);
-        forecastGrid.add(descLabel, 2, index);
-        forecastGrid.add(humidityLabel, 3, index);
-    }
 
     @FXML
     public void onGetForecastButtonClick() {
-        // Get city name from the text field
-        String cityName = cityTextField.getText().trim();
-        String countryCode = "AT";  // Use a dynamic country code if necessary
+        // Use the ListView selection, just like in onGetWeatherButtonClick
+        if (this.selectedCity == null || this.selectedCity.isEmpty()) {
+            return;
+        }
+        String[] cityAndCountryCode = this.selectedCity.split(";");
+        if (cityAndCountryCode.length < 2) {
+            return;
+        }
 
+        String cityName = cityAndCountryCode[0];
+        String countryCode = cityAndCountryCode[1];
+
+        // Now fetch the forecast using the REAL city & country:
         try {
-            // Fetch forecast data
             WeatherAPI api = new WeatherAPI();
             String jsonResponse = api.fetchForecast(cityName, countryCode);
 
-            // Parse the forecast data
             WeatherData[] forecastData = api.parseForecastData(jsonResponse);
 
-            // Clear previous forecast from the GridPane
             clearForecastGrid();
             forecastGrid.getChildren().clear();
 
-            // Loop through the forecastData array and add it to your GridPane
+            // Fill the grid with your forecast data
             for (int i = 0; i < forecastData.length; i++) {
                 WeatherData data = forecastData[i];
+                double temperature = isCelsius
+                        ? data.getTemperature()
+                        : (data.getTemperature() * 9.0 / 5.0) + 32.0;
 
-                // Adjust the temperature based on the selected unit (Celsius/Fahrenheit)
-                double temperature = isCelsius ? data.getTemperature() : (data.getTemperature() * 9/5) + 32;
+                Label dayLabel = new Label(translateDay(i));
+                Label tempLabel = new Label(String.format("%.1f", temperature)
+                        + (isCelsius ? "°C" : "°F"));
+                Label descLabel = new Label(translateWeatherDescription(data.getDescription()));
+                Label humidityLabel = new Label(translateHumidity(data.getHumidity()));
 
-                // Create labels for each forecast day
-                Label dayLabel = new Label(translateDay(i)); // Translate Day label
-                Label tempLabel = new Label(String.format("%.1f", temperature) + (isCelsius ? "°C" : "°F"));
-                Label descLabel = new Label(translateWeatherDescription(data.getDescription())); // Translate weather description
-                Label humidityLabel = new Label(translateHumidity(data.getHumidity())); // Translate humidity
-
-                // Add these labels to the GridPane
-                forecastGrid.add(dayLabel, 0, i);  // Add to column 0, row i
-                forecastGrid.add(tempLabel, 1, i);  // Add to column 1, row i
-                forecastGrid.add(descLabel, 2, i);  // Add to column 2, row i
-                forecastGrid.add(humidityLabel, 3, i);  // Add to column 3, row i
+                forecastGrid.add(dayLabel,     0, i);
+                forecastGrid.add(tempLabel,    1, i);
+                forecastGrid.add(descLabel,    2, i);
+                forecastGrid.add(humidityLabel,3, i);
             }
-
         } catch (Exception e) {
-            // Handle any exceptions (e.g., network issues, parsing errors)
             e.printStackTrace();
         }
-    }
-
-    private Stage getStage() {
-        return (Stage) getWeatherButton.getScene().getWindow();
     }
 
     private void clearForecastGrid() {
