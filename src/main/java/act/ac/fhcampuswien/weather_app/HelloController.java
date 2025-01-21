@@ -103,6 +103,9 @@ public class HelloController {
         goBackButton.setVisible(false);
         getWeatherButton.setVisible(true);
         getForecastButton.setVisible(true);
+        //scrollPane.setFitToWidth(true);
+        //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        //scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         applyButtonStyle(getWeatherButton);
         applyButtonStyle(goBackButton);

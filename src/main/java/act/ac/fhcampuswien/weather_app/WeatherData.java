@@ -28,14 +28,6 @@ public class WeatherData {
     }
 
     /**
-     * Parses the JSON response to extract forecast data.
-     *
-     * @param jsonResponse The JSON response containing forecast data.
-     * @return An array of WeatherData objects with the forecast information.
-     */
-
-
-    /**
      * Retrieves the temperature.
      *
      * @return The temperature in Celsius.
