@@ -27,7 +27,7 @@ public class HelloApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
 
         // Create the scene with specified dimensions and load the FXML content
-        Scene scene = new Scene(fxmlLoader.load(), 900, 900);
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 1000);
 
         // Apply the dark theme stylesheet to the scene
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles/dark-theme.css")).toExternalForm());
