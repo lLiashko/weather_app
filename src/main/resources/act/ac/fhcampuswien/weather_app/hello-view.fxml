@@ -14,28 +14,31 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.GridPane?>
 
-
-
+<!-- Main layout container -->
 <StackPane fx:id="rootStackPane" styleClass="root-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="act.ac.fhcampuswien.weather_app.HelloController">
 
+    <!-- Tab Pane for switching between Weather and Settings -->
     <TabPane fx:id="tabPane" styleClass="main-tab-pane" tabClosingPolicy="UNAVAILABLE">
+
+        <!-- Weather Tab -->
         <Tab text="Weather">
             <VBox fx:id="rootVBox" alignment="CENTER" spacing="15" styleClass="main-container">
 
-                <!-- Input for city and country code -->
+                <!-- Input field for city name -->
                 <TextField fx:id="cityTextField" promptText="Enter City Name" styleClass="city-textfield">
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin></TextField>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </TextField>
 
-
+                <!-- ListView for displaying available cities -->
                 <ListView fx:id="listView" styleClass="weather-button" />
 
-                <!-- Button to fetch weather -->
+                <!-- Buttons for fetching weather and forecast data -->
                 <Button fx:id="getWeatherButton" onAction="#onGetWeatherButtonClick" styleClass="weather-button" text="Get Weather" />
-
                 <Button fx:id="getForecastButton" text="Get Weather Forecast" onAction="#onGetForecastButtonClick" />
 
+                <!-- Grid for displaying forecast data -->
                 <GridPane fx:id="forecastGrid" hgap="10" vgap="10" alignment="CENTER" styleClass="forecast-grid">
                     <Label text="Day" />
                     <Label text="Temperature" />
@@ -43,8 +46,7 @@
                     <Label text="Humidity" />
                 </GridPane>
 
-
-                <!-- Labels to display weather details -->
+                <!-- Labels for displaying weather details -->
                 <Label fx:id="cityLabel" styleClass="weather-label-title" text="City Name" />
                 <Label fx:id="temperatureLabel" styleClass="weather-label-temp" text="Temperature" />
                 <Label fx:id="humidityLabel" styleClass="weather-label-sub" text="Humidity" />
@@ -52,13 +54,16 @@
                 <Label fx:id="moodLabel" styleClass="weather-label-sub" text="Mood" />
                 <Label fx:id="suggestionLabel" styleClass="weather-label-sub" text="Suggestion" />
 
-                <!-- Weather Icon -->
+                <!-- Weather icon display -->
                 <ImageView fx:id="weatherIcon" fitHeight="100" fitWidth="100" styleClass="weather-icon" />
 
+                <!-- Button to navigate back -->
                 <Button fx:id="goBackButton" onAction="#onGoBackButtonClick" styleClass="back-button" text="Go Back" visible="false" /> <!-- Initially hidden -->
 
             </VBox>
         </Tab>
+
+        <!-- Settings Tab -->
         <Tab text="Settings">
             <VBox fx:id="settingsVBox" alignment="CENTER" spacing="15" styleClass="settings-container">
                 <Label styleClass="settings-title" text="Settings" />
@@ -68,10 +73,9 @@
                     <Label styleClass="settings-label" text="Temperature Unit:" />
                     <RadioButton fx:id="celsiusRadioButton" styleClass="settings-radio-button" text="Celsius" />
                     <RadioButton fx:id="fahrenheitRadioButton" styleClass="settings-radio-button" text="Fahrenheit" />
-
                 </HBox>
 
-                <!-- Language Selection -->
+                <!-- Language Selection Toggle -->
                 <HBox alignment="CENTER" spacing="10" styleClass="settings-hbox">
                     <Label styleClass="settings-label" text="Language:" />
                     <RadioButton fx:id="englishRadioButton" styleClass="settings-radio-button" text="English" />
