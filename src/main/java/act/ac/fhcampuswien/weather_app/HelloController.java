@@ -94,9 +94,9 @@ public class HelloController {
         // Now fetch the forecast using the REAL city & country:
         try {
             WeatherAPI api = new WeatherAPI();
-            String jsonResponse = api.fetchForecast(cityName, countryCode);
+            String jsonResponse = api.fetchWeather(cityName, countryCode);
 
-            WeatherData[] forecastData = api.parseForecastData(jsonResponse);
+            WeatherData[] forecastData = new WeatherData[]{api.parseWeatherData(jsonResponse)};
 
             clearForecastGrid();
             forecastGrid.getChildren().clear();
