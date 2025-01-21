@@ -243,6 +243,7 @@ public class HelloController {
             getWeatherButton.setVisible(false);
             cityTextField.setVisible(false);
             listView.setVisible(false);
+            listView.setManaged(false);
 
         } catch (Exception e) {
             cityLabel.setText(currentLanguage.equals("English") ? "Error: Could not fetch data for " + cityName : "Fehler: Daten für " + cityName + " konnten nicht abgerufen werden");
@@ -260,6 +261,7 @@ public class HelloController {
         getForecastButton.setVisible(true);
         cityTextField.setVisible(true);
         listView.setVisible(true);
+        listView.setManaged(true);
 
         celsiusRadioButton.setSelected(true);
         updateTemperatureUnit(true);
