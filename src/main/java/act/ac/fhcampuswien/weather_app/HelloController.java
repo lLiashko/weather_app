@@ -4,130 +4,98 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
 
 import java.io.*;
 
+/**
+ * Controller class for managing the Weather App's UI and logic.
+ */
 public class HelloController {
 
-    @FXML
-    private TextField cityTextField;
-    @FXML
-    private ListView<String> listView;
-    @FXML
-    private Label cityLabel;
-    @FXML
-    private Label temperatureLabel;
-    @FXML
-    private Label descriptionLabel;
-    @FXML
-    private Label humidityLabel;
-    @FXML
-    private Label moodLabel;
-    @FXML
-    private Label suggestionLabel;
-    @FXML
-    private ImageView weatherIcon;
-    @FXML
-    private VBox rootVBox; // Root VBox to change background color
-    @FXML
-    private Button goBackButton;
-    @FXML
-    private Button getWeatherButton;
-    @FXML
-    private Button saveSettingsButton;
-    @FXML
-    private RadioButton celsiusRadioButton;
-    @FXML
-    private RadioButton fahrenheitRadioButton;
-    @FXML
-    private RadioButton englishRadioButton;
-    @FXML
-    private RadioButton germanRadioButton;
-    @FXML
-    private Tab settingsTab;
-    @FXML
-    private Label settingsTitleLabel;
-    @FXML
-    private Label temperatureUnitLabel;
-    @FXML
-    private Label languageLabel;
-    @FXML
-    private GridPane forecastGrid;
-    @FXML
-    private Button getForecastButton;
-    @FXML
-    private TextField cityInputField; // TextField für Stadt
+    // FXML-bound UI components
+    @FXML private TextField cityTextField;
+    @FXML private ListView<String> listView;
+    @FXML private Label cityLabel;
+    @FXML private Label temperatureLabel;
+    @FXML private Label descriptionLabel;
+    @FXML private Label humidityLabel;
+    @FXML private Label moodLabel;
+    @FXML private Label suggestionLabel;
+    @FXML private ImageView weatherIcon;
+    @FXML private VBox rootVBox;
+    @FXML private Button goBackButton;
+    @FXML private Button getWeatherButton;
+    @FXML private Button saveSettingsButton;
+    @FXML private RadioButton celsiusRadioButton;
+    @FXML private RadioButton fahrenheitRadioButton;
+    @FXML private RadioButton englishRadioButton;
+    @FXML private RadioButton germanRadioButton;
+    @FXML private Tab settingsTab;
+    @FXML private Label settingsTitleLabel;
+    @FXML private Label temperatureUnitLabel;
+    @FXML private Label languageLabel;
+    @FXML private GridPane forecastGrid;
+    @FXML private Button getForecastButton;
+    @FXML private TextField cityInputField;
+    @FXML private TextField countryCodeInputField;
 
-    @FXML
-    private TextField countryCodeInputField; // TextField für Ländercode
-
-
-    private boolean isCelsius = true; // Default to Celsius
-    private double currentTemperatureInCelsius; // Store the current temperature in Celsius
-    private String currentLanguage = "English"; // Default to English
+    // Internal state variables
+    private boolean isCelsius = true;
+    private double currentTemperatureInCelsius;
+    private String currentLanguage = "English";
     private ObservableList<String> cityList = FXCollections.observableArrayList();
     private String selectedCity = "";
 
-
+    /**
+     * Handles the forecast button click event.
+     * Fetches and displays forecast data for the selected city.
+     */
     @FXML
     public void onGetForecastButtonClick() {
-        // Use the ListView selection, just like in onGetWeatherButtonClick
-        if (this.selectedCity == null || this.selectedCity.isEmpty()) {
-            return;
-        }
-        String[] cityAndCountryCode = this.selectedCity.split(";");
-        if (cityAndCountryCode.length < 2) {
-            return;
-        }
+        if (selectedCity == null || selectedCity.isEmpty()) return;
+
+        String[] cityAndCountryCode = selectedCity.split(";");
+        if (cityAndCountryCode.length < 2) return;
 
         String cityName = cityAndCountryCode[0];
         String countryCode = cityAndCountryCode[1];
 
-        // Now fetch the forecast using the REAL city & country:
         try {
             WeatherAPI api = new WeatherAPI();
-            String jsonResponse = api.fetchWeather(cityName, countryCode);
-
-            WeatherData[] forecastData = new WeatherData[]{api.parseWeatherData(jsonResponse)};
+            String jsonResponse = api.fetchForecast(cityName, countryCode);
+            WeatherData[] forecastData = api.parseForecastData(jsonResponse);
 
             clearForecastGrid();
-            forecastGrid.getChildren().clear();
 
-            // Fill the grid with your forecast data
             for (int i = 0; i < forecastData.length; i++) {
                 WeatherData data = forecastData[i];
-                double temperature = isCelsius
-                        ? data.getTemperature()
-                        : (data.getTemperature() * 9.0 / 5.0) + 32.0;
+                double temperature = isCelsius ? data.getTemperature() : (data.getTemperature() * 9.0 / 5.0) + 32.0;
 
-                Label dayLabel = new Label(translateDay(i));
-                Label tempLabel = new Label(String.format("%.1f", temperature)
-                        + (isCelsius ? "°C" : "°F"));
-                Label descLabel = new Label(translateWeatherDescription(data.getDescription()));
-                Label humidityLabel = new Label(translateHumidity(data.getHumidity()));
-
-                forecastGrid.add(dayLabel,     0, i);
-                forecastGrid.add(tempLabel,    1, i);
-                forecastGrid.add(descLabel,    2, i);
-                forecastGrid.add(humidityLabel,3, i);
+                forecastGrid.add(new Label(translateDay(i)), 0, i);
+                forecastGrid.add(new Label(String.format("%.1f%s", temperature, isCelsius ? "°C" : "°F")), 1, i);
+                forecastGrid.add(new Label(translateWeatherDescription(data.getDescription())), 2, i);
+                forecastGrid.add(new Label(translateHumidity(data.getHumidity())), 3, i);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Clears the forecast grid UI component.
+     */
     private void clearForecastGrid() {
         forecastGrid.getChildren().clear();
     }
 
+    /**
+     * Initializes the UI components and application state.
+     */
     @FXML
     public void initialize() {
         clearWeatherData();
@@ -139,6 +107,16 @@ public class HelloController {
         applyButtonStyle(getWeatherButton);
         applyButtonStyle(goBackButton);
 
+        initializeToggleGroups();
+        initializeListView();
+
+        loadCSVFiles();
+    }
+
+    /**
+     * Sets up toggle groups for radio buttons and their event handlers.
+     */
+    private void initializeToggleGroups() {
         ToggleGroup temperatureToggleGroup = new ToggleGroup();
         celsiusRadioButton.setToggleGroup(temperatureToggleGroup);
         fahrenheitRadioButton.setToggleGroup(temperatureToggleGroup);
@@ -153,104 +131,87 @@ public class HelloController {
         fahrenheitRadioButton.setOnAction(event -> updateTemperatureUnit(false));
         englishRadioButton.setOnAction(event -> updateLanguage("English"));
         germanRadioButton.setOnAction(event -> updateLanguage("German"));
-        loadCSVFiles();
+    }
 
+    /**
+     * Initializes the ListView and sets up filtering logic.
+     */
+    private void initializeListView() {
         FilteredList<String> filteredList = new FilteredList<>(cityList, s -> true);
         listView.setItems(filteredList);
 
-        cityTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredList.setPredicate(city -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-                return city.toLowerCase().contains(newValue.toLowerCase());
-            });
-        });
+        cityTextField.textProperty().addListener((observable, oldValue, newValue) ->
+                filteredList.setPredicate(city -> newValue == null || newValue.isEmpty() || city.toLowerCase().contains(newValue.toLowerCase())));
 
         listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, userSelection) -> {
             if (userSelection != null) {
-                this.selectedCity = userSelection;
+                selectedCity = userSelection;
             }
         });
     }
 
+    /**
+     * Loads city data from a CSV file into the city list.
+     */
     private void loadCSVFiles() {
         try (InputStream input = getClass().getResourceAsStream("/data/country_codes.csv");
              BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                this.cityList.add(line);
+                cityList.add(line);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Applies a consistent style to buttons.
+     *
+     * @param button the button to style
+     */
     private void applyButtonStyle(Button button) {
-        button.setStyle("-fx-background-color: #4682B4; " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 14px; " +
-                "-fx-padding: 10px 20px; " +
-                "-fx-background-radius: 5px;");
+        button.setStyle("-fx-background-color: #4682B4; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 5px;");
 
-        button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: #5A9BD4; " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 14px; " +
-                "-fx-padding: 10px 20px; " +
-                "-fx-background-radius: 5px;"));
-        button.setOnMouseExited(event -> button.setStyle("-fx-background-color: #4682B4; " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 14px; " +
-                "-fx-padding: 10px 20px; " +
-                "-fx-background-radius: 5px;"));
+        button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: #5A9BD4; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 5px;"));
+        button.setOnMouseExited(event -> button.setStyle("-fx-background-color: #4682B4; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px 20px; -fx-background-radius: 5px;"));
     }
 
+    /**
+     * Handles the weather button click event.
+     * Fetches and displays weather data for the selected city.
+     */
     @FXML
     public void onGetWeatherButtonClick() {
-        if (this.selectedCity.isEmpty()) {
-            return;
-        }
-        String[] cityAndCountryCode = this.selectedCity.split(";");
+        if (selectedCity.isEmpty()) return;
+
+        String[] cityAndCountryCode = selectedCity.split(";");
         String cityName = cityAndCountryCode[0];
         String countryCode = cityAndCountryCode[1];
 
         clearWeatherData();
 
         if (cityName.isEmpty() || countryCode.isEmpty()) {
-            cityLabel.setText(currentLanguage.equals("English") ? "Please enter a city and country code!" : "Bitte gib eine Stadt und einen Ländercode ein!");
+            cityLabel.setText(getLocalizedText("Please enter a city and country code!", "Bitte gib eine Stadt und einen Ländercode ein!"));
             return;
         }
 
         try {
             WeatherAPI api = new WeatherAPI();
             String jsonResponse = api.fetchWeather(cityName, countryCode);
-
             WeatherData weatherData = api.parseWeatherData(jsonResponse);
 
-            cityLabel.setText(weatherData.getCityName());
-            currentTemperatureInCelsius = weatherData.getTemperature();
-            updateTemperatureLabel(currentTemperatureInCelsius);
-            descriptionLabel.setText(translateWeatherDescription(weatherData.getDescription()));
-            humidityLabel.setText(currentLanguage.equals("English") ? "Humidity: " + weatherData.getHumidity() + "%" : "Luftfeuchtigkeit: " + weatherData.getHumidity() + "%");
-
-            updateWeatherIcon(weatherData.getDescription());
-            assignMoodAndSuggestion(weatherData.getDescription());
-            updateBackgroundColor(weatherData.getDescription());
-
-            getForecastButton.setVisible(false);
-
-            goBackButton.setVisible(true);
-            getWeatherButton.setVisible(false);
-            cityTextField.setVisible(false);
-            listView.setVisible(false);
-            listView.setManaged(false);
-
+            updateWeatherUI(weatherData);
         } catch (Exception e) {
-            cityLabel.setText(currentLanguage.equals("English") ? "Error: Could not fetch data for " + cityName : "Fehler: Daten für " + cityName + " konnten nicht abgerufen werden");
+            cityLabel.setText(getLocalizedText("Error: Could not fetch data for " + cityName, "Fehler: Daten für " + cityName + " konnten nicht abgerufen werden"));
             e.printStackTrace();
         }
     }
 
+    /**
+     * Handles the go-back button click event.
+     * Resets the UI to the initial state.
+     */
     @FXML
     public void onGoBackButtonClick() {
         clearWeatherData();
@@ -261,12 +222,14 @@ public class HelloController {
         getForecastButton.setVisible(true);
         cityTextField.setVisible(true);
         listView.setVisible(true);
-        listView.setManaged(true);
 
         celsiusRadioButton.setSelected(true);
         updateTemperatureUnit(true);
     }
 
+    /**
+     * Clears weather data from the UI components.
+     */
     private void clearWeatherData() {
         cityLabel.setText("");
         temperatureLabel.setText("");
@@ -274,87 +237,117 @@ public class HelloController {
         humidityLabel.setText("");
         moodLabel.setText("");
         suggestionLabel.setText("");
-
         weatherIcon.setImage(null);
         rootVBox.setStyle("");
         currentTemperatureInCelsius = 0.0;
     }
 
+    /**
+     * Updates the UI with fetched weather data.
+     *
+     * @param weatherData the weather data to display
+     */
+    private void updateWeatherUI(WeatherData weatherData) {
+        cityLabel.setText(weatherData.getCityName());
+        currentTemperatureInCelsius = weatherData.getTemperature();
+        updateTemperatureLabel(currentTemperatureInCelsius);
+        descriptionLabel.setText(translateWeatherDescription(weatherData.getDescription()));
+        humidityLabel.setText(translateHumidity(weatherData.getHumidity()));
+        updateWeatherIcon(weatherData.getDescription());
+        assignMoodAndSuggestion(weatherData.getDescription());
+        updateBackgroundColor(weatherData.getDescription());
+
+        toggleUIVisibilityForWeatherDetails();
+    }
+
+    /**
+     * Toggles UI visibility when displaying weather details.
+     */
+    private void toggleUIVisibilityForWeatherDetails() {
+        getForecastButton.setVisible(false);
+        goBackButton.setVisible(true);
+        getWeatherButton.setVisible(false);
+        cityTextField.setVisible(false);
+        listView.setVisible(false);
+    }
+
+    /**
+     * Returns localized text based on the current language.
+     *
+     * @param englishText the English version of the text
+     * @param germanText the German version of the text
+     * @return the text in the current language
+     */
+    private String getLocalizedText(String englishText, String germanText) {
+        return currentLanguage.equals("English") ? englishText : germanText;
+    }
+
+    /**
+     * Updates the weather icon based on the description.
+     *
+     * @param weatherDescription the description of the weather
+     */
     private void updateWeatherIcon(String weatherDescription) {
         String iconFileName;
 
         switch (weatherDescription.toLowerCase()) {
-            case "clear sky":
-                iconFileName = "clear.png";
-                break;
+            case "clear sky": iconFileName = "clear.png"; break;
             case "few clouds":
-                iconFileName = "cloudy.png";
-                break;
             case "scattered clouds":
-                iconFileName = "cloudy.png";
-                break;
             case "broken clouds":
-                iconFileName = "cloudy.png";
-                break;
+            case "overcast clouds": iconFileName = "cloudy.png"; break;
             case "shower rain":
-                iconFileName = "rain.png";
-                break;
             case "rain":
-            case "light intensity drizzle":
-                iconFileName = "rain.png";
-                break;
-            case "overcast clouds":
-                iconFileName = "cloudy.png";
-                break;
-            case "thunderstorm":
-                iconFileName = "cloudy.png";
-                break;
-            case "snow":
-                iconFileName = "snow.png";
-                break;
-            case "mist":
-                iconFileName = "humidity.png";
-                break;
-            default:
-                iconFileName = "default.png";
+            case "light intensity drizzle": iconFileName = "rain.png"; break;
+            case "thunderstorm": iconFileName = "cloudy.png"; break;
+            case "snow": iconFileName = "snow.png"; break;
+            case "mist": iconFileName = "humidity.png"; break;
+            default: iconFileName = "default.png";
         }
 
         try {
-            String iconPath = "/icons/" + iconFileName;
-            Image icon = new Image(getClass().getResource(iconPath).toExternalForm());
+            Image icon = new Image(getClass().getResource("/icons/" + iconFileName).toExternalForm());
             weatherIcon.setImage(icon);
-        } catch (NullPointerException e) {
-            System.err.println("Error loading icon for description: " + weatherDescription + ". File not found: " + iconFileName);
         } catch (Exception e) {
-            System.err.println("Error loading icon for description: " + weatherDescription + ". " + e.getMessage());
+            System.err.println("Error loading icon for description: " + weatherDescription + ". File not found: " + iconFileName);
         }
     }
 
+    /**
+     * Assigns mood and suggestion text based on the weather description.
+     *
+     * @param weatherDescription the description of the weather
+     */
     private void assignMoodAndSuggestion(String weatherDescription) {
         String mood;
         String suggestion;
 
         if (weatherDescription.toLowerCase().contains("clear")) {
-            mood = currentLanguage.equals("English") ? "Sunny: Having Main Character Energy" : "Sonnig: Main-Character-Energy Vibes";
-            suggestion = currentLanguage.equals("English") ? "Listen to 'Walking on Sunshine'!" : "Hör dir 'Walking on Sunshine' an!";
+            mood = getLocalizedText("Sunny: Having Main Character Energy", "Sonnig: Main-Character-Energy Vibes");
+            suggestion = getLocalizedText("Listen to 'Walking on Sunshine'!", "Hör dir 'Walking on Sunshine' an!");
         } else if (weatherDescription.toLowerCase().contains("cloud")) {
-            mood = currentLanguage.equals("English") ? "Cloudy: Feeling Pensive" : "Wolkig: Nachdenklich";
-            suggestion = currentLanguage.equals("English") ? "Watch 'The Cloud Atlas'." : "Schau dir 'The Cloud Atlas' an.";
+            mood = getLocalizedText("Cloudy: Feeling Pensive", "Wolkig: Nachdenklich");
+            suggestion = getLocalizedText("Watch 'The Cloud Atlas'.", "Schau dir 'The Cloud Atlas' an.");
         } else if (weatherDescription.toLowerCase().contains("rain")) {
-            mood = currentLanguage.equals("English") ? "Rainy: Feeling Emo" : "Regnerisch: Emo Vibes";
-            suggestion = currentLanguage.equals("English") ? "Listen to 'Raindrops Keep Fallin' on My Head'." : "Hören dir 'Raindrops Keep Fallin' on My Head' an.";
+            mood = getLocalizedText("Rainy: Feeling Emo", "Regnerisch: Emo Vibes");
+            suggestion = getLocalizedText("Listen to 'Raindrops Keep Fallin' on My Head'.", "Hören dir 'Raindrops Keep Fallin' on My Head' an.");
         } else if (weatherDescription.toLowerCase().contains("snow")) {
-            mood = currentLanguage.equals("English") ? "Snowy: Feeling Cozy" : "Schneebedeckt: Gemütliche Vibes";
-            suggestion = currentLanguage.equals("English") ? "Watch 'Frozen'." : "Schau dir 'Frozen' an.";
+            mood = getLocalizedText("Snowy: Feeling Cozy", "Schneebedeckt: Gemütliche Vibes");
+            suggestion = getLocalizedText("Watch 'Frozen'.", "Schau dir 'Frozen' an.");
         } else {
-            mood = currentLanguage.equals("English") ? "Unknown: Feeling Curious" : "Unbekannt: Neugierige Vibes";
-            suggestion = currentLanguage.equals("English") ? "Explore new music or movies!" : "Entdecke neue Musik oder Filme!";
+            mood = getLocalizedText("Unknown: Feeling Curious", "Unbekannt: Neugierige Vibes");
+            suggestion = getLocalizedText("Explore new music or movies!", "Entdecke neue Musik oder Filme!");
         }
 
         moodLabel.setText(mood);
         suggestionLabel.setText(suggestion);
     }
 
+    /**
+     * Updates the background color based on the weather description.
+     *
+     * @param weatherDescription the description of the weather
+     */
     private void updateBackgroundColor(String weatherDescription) {
         String backgroundColor;
 
@@ -373,6 +366,11 @@ public class HelloController {
         rootVBox.setStyle("-fx-background-color: " + backgroundColor + "; -fx-padding: 20; -fx-font-family: 'Arial';");
     }
 
+    /**
+     * Updates the temperature unit based on user selection.
+     *
+     * @param isCelsius true if the unit is Celsius, false for Fahrenheit
+     */
     private void updateTemperatureUnit(boolean isCelsius) {
         this.isCelsius = isCelsius;
         if (currentTemperatureInCelsius != 0) {
@@ -380,12 +378,21 @@ public class HelloController {
         }
     }
 
+    /**
+     * Updates the temperature label in the UI.
+     *
+     * @param temperatureInCelsius the temperature in Celsius
+     */
     private void updateTemperatureLabel(double temperatureInCelsius) {
         double temperature = isCelsius ? temperatureInCelsius : (temperatureInCelsius * 9 / 5) + 32;
-        String unit = isCelsius ? "°C" : "°F";
-        temperatureLabel.setText(String.format("%.1f%s", temperature, unit));
+        temperatureLabel.setText(String.format("%.1f%s", temperature, isCelsius ? "°C" : "°F"));
     }
 
+    /**
+     * Updates the language for the UI and reloads labels accordingly.
+     *
+     * @param language the selected language
+     */
     private void updateLanguage(String language) {
         this.currentLanguage = language;
         updateUILabels();
@@ -397,6 +404,9 @@ public class HelloController {
         }
     }
 
+    /**
+     * Updates UI labels to match the current language.
+     */
     private void updateUILabels() {
         if (currentLanguage.equals("English")) {
             cityTextField.setPromptText("Enter City Name");
@@ -426,6 +436,14 @@ public class HelloController {
             languageLabel.setText("Sprache");
         }
     }
+
+    /**
+     * Translates the given weather description to the current language.
+     *
+     * @param description the weather description in English
+     * @return the translated description if the current language is German,
+     *         otherwise returns the original description
+     */
     private String translateWeatherDescription(String description) {
         if (currentLanguage.equals("German")) {
             switch (description.toLowerCase()) {
@@ -462,29 +480,33 @@ public class HelloController {
                 case "overcast clouds":
                     return "Bewölkt";
                 default:
-                    return description; // Fallback to the original if not matched
+                    return description;
             }
         }
-        return description; // Return the description as is if language is English
-    }
-    private String translateHumidity(int humidity) {
-        if (currentLanguage.equals("German")) {
-            return "Luftfeuchtigkeit: " + humidity + "%";
-        }
-        return "Humidity: " + humidity + "%";
-    }
-    private String translateDay(int index) {
-        if (currentLanguage.equals("German")) {
-            switch (index) {
-                case 0: return "Tag 1";
-                case 1: return "Tag 2";
-                case 2: return "Tag 3";
-                case 3: return "Tag 4";
-                case 4: return "Tag 5";
-                default: return "Tag " + (index + 1); // Fallback
-            }
-        }
-        return "Day " + (index + 1); // Return in English by default
+        return description;
     }
 
+    /**
+     * Translates the humidity value to the current language.
+     *
+     * @param humidity the humidity percentage
+     * @return a formatted string for humidity in the current language
+     */
+    private String translateHumidity(int humidity) {
+        return currentLanguage.equals("German")
+                ? "Luftfeuchtigkeit: " + humidity + "%"
+                : "Humidity: " + humidity + "%";
+    }
+
+    /**
+     * Translates the day index to the current language.
+     *
+     * @param index the index of the day (starting from 0)
+     * @return a formatted string for the day in the current language
+     */
+    private String translateDay(int index) {
+        return currentLanguage.equals("German")
+                ? "Tag " + (index + 1)
+                : "Day " + (index + 1);
+    }
 }

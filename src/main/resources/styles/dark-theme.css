@@ -142,3 +142,34 @@
 .tab-pane .tab-header-area .tab-header-background {
     -fx-background-color: transparent;
 }
+/* Button styling */
+.button-style {
+    -fx-background-color: #4682B4;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}
+
+.button-style:hover {
+    -fx-background-color: #5A9BD4;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}
+.button {
+    -fx-background-color: #4682B4;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #5A9BD4;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}

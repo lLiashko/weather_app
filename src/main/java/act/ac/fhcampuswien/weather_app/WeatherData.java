@@ -1,9 +1,5 @@
 package act.ac.fhcampuswien.weather_app;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 /**
  * Represents weather data and provides functionality to parse forecast data.
  */
@@ -37,33 +33,7 @@ public class WeatherData {
      * @param jsonResponse The JSON response containing forecast data.
      * @return An array of WeatherData objects with the forecast information.
      */
-    public WeatherData[] parseForecastData(String jsonResponse) {
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(jsonResponse, JsonObject.class);
 
-        // Extract city name and country code from the JSON response
-        String cityName = jsonObject.get("city").getAsJsonObject().get("name").getAsString();
-        String countryCode = jsonObject.get("city").getAsJsonObject().get("country").getAsString();
-
-        // Extract the forecast list
-        JsonArray list = jsonObject.getAsJsonArray("list");
-        WeatherData[] forecastData = new WeatherData[list.size()];
-
-        // Iterate through the forecast entries
-        for (int i = 0; i < list.size(); i++) {
-            JsonObject entry = list.get(i).getAsJsonObject();
-
-            // Extract temperature, humidity, and description from each entry
-            int temperature = entry.getAsJsonObject("main").get("temp").getAsInt();
-            int humidity = entry.getAsJsonObject("main").get("humidity").getAsInt();
-            String description = entry.getAsJsonArray("weather").get(0).getAsJsonObject().get("description").getAsString();
-
-            // Create a new WeatherData object for each forecast entry
-            forecastData[i] = new WeatherData(temperature, humidity, description, cityName, countryCode);
-        }
-
-        return forecastData; // Return the array of WeatherData objects
-    }
 
     /**
      * Retrieves the temperature.
