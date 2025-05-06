@@ -12,6 +12,19 @@ This is a **JavaFX-based weather application** that fetches weather data for a s
 - User-friendly interface built with JavaFX.
 - Handles errors gracefully, such as invalid city names or API issues.
 
+## 📱 App Screenshots
+### 🔍 Main Screen – City Search
+On the main screen, users can search for a city to view current weather conditions. The search bar allows real-time suggestions as the user types.
+![Screenshot 2025-05-06 at 11 49 23](https://github.com/user-attachments/assets/27f0059f-8b20-4167-9d82-31211781b844)
+
+### 🌤️ Weather Screen
+After selecting a city, the weather screen displays the current weather, temperature, and additional data like humidity and some funny suggestions what to do during this weather.
+![Screenshot 2025-05-06 at 11 49 53](https://github.com/user-attachments/assets/05a98a0d-37fc-456f-95a2-833ee65b843e)
+
+### ⚙️ Settings Screen
+The settings screen lets users customize units (Celsius/Fahrenheit) and language.
+![Screenshot 2025-05-06 at 11 49 33](https://github.com/user-attachments/assets/46c4056d-8c92-480c-afc7-ea6e51d8a80f)
+
 ## Prerequisites ⚙️
 Before running the project, make sure you have the following installed:
 1. **Java Development Kit (JDK)**: Requires **Java 21** (or newer).
